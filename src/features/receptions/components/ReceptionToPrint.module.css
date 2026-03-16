@@ -1,0 +1,497 @@
+.sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 14mm;
+  background: #ffffff;
+  color: #111827;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.14);
+}
+
+.companyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.companyKicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.companyName {
+  margin: 0.2rem 0;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;
+}
+
+.companyAddress {
+  margin: 0;
+  font-size: 10px;
+  color: #4b5563;
+}
+
+.documentMeta {
+  text-align: right;
+}
+
+.documentTitle {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.documentDate {
+  margin: 0.4rem 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.guideBadge {
+  margin: 0.5rem 0 0;
+  display: inline-block;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  padding: 0.25rem 0.55rem;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.separator {
+  margin: 1.1rem 0;
+  height: 1px;
+  background: rgba(17, 24, 39, 0.22);
+}
+
+.producerSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  margin-bottom: 1.2rem;
+}
+
+.infoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.inlineInfo {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.inlineLabel {
+  width: 84px;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.inlineValue {
+  font-size: 10px;
+  color: #111827;
+}
+
+.plateValue {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #111827;
+}
+
+.weightCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1.3rem;
+}
+
+.weightCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  text-align: center;
+  padding: 0.65rem;
+}
+
+.weightCardHighlight {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.weightLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.weightLabelHighlight {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 9px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.weightValue {
+  margin: 0.35rem 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.weightValueHighlight {
+  margin: 0.35rem 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.analysisSection {
+  margin-bottom: 1.3rem;
+}
+
+.analysisHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.45rem;
+}
+
+.analysisTitle {
+  margin: 0;
+  display: inline-block;
+  border-bottom: 2px solid #1e3a8a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1f2937;
+}
+
+.analysisTemplate {
+  margin: 0;
+  font-size: 9px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.stateBox {
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 11px;
+  color: #475569;
+}
+
+.stateBoxError {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.analysisTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.analysisTable thead tr,
+.analysisFooterRow {
+  background: #f3f4f6;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.analysisTable th,
+.analysisTable td {
+  padding: 0.45rem 0.5rem;
+}
+
+.analysisTable tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.analysisTable th {
+  text-align: left;
+  font-weight: 800;
+  color: #111827;
+}
+
+.rightAlign {
+  text-align: right !important;
+}
+
+.emptyRow {
+  text-align: center;
+  color: #64748b;
+  padding: 0.7rem !important;
+}
+
+.groupHeaderRow {
+  background: #eef2ff;
+}
+
+.groupHeaderCell {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #1e3a8a;
+}
+
+.groupFooterRow {
+  background: #f1f5f9;
+  font-weight: 800;
+}
+
+.analysisFooterRow {
+  font-weight: 800;
+}
+
+.analysisFooterRow td {
+  background: #f3f4f6;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.dryPercentInfo {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.dryPercentLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.dryPercentValue {
+  font-size: 10px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.finalTotalsSection {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.4rem;
+}
+
+.finalTotalsCard {
+  width: min(340px, 100%);
+}
+
+.totalLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0.24rem 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.positiveValue {
+  color: #15803d;
+}
+
+.netLine {
+  margin-top: 0.42rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  background: #e5e7eb;
+  color: #1f2937;
+  padding: 0.5rem 0.62rem;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.notesSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.notesTitle {
+  margin: 0 0 0.25rem;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.notesBox {
+  min-height: 62px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 0.5rem;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.legalBox {
+  min-height: 62px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 0.55rem;
+  font-size: 9px;
+  line-height: 1.36;
+  color: #374151;
+  text-align: justify;
+}
+
+.signatureSection {
+  margin-top: 3.25rem;
+  position: relative;
+  min-height: 118px;
+  padding-top: 0.9rem;
+  padding-right: 0.8rem;
+  margin-right: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.signatureStamp {
+  position: absolute;
+  right: -8px;
+  top: -42px;
+  width: 119px;
+  height: auto;
+  transform: rotate(-19deg);
+  opacity: 0.88;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.signatureLine {
+  width: 260px;
+  border-top: 1px solid #111827;
+  padding-top: 0.35rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.signatureLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.signatureCompany {
+  margin: 0.2rem 0 0;
+  font-size: 7px;
+  color: #6b7280;
+}
+
+.footer {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.42rem;
+  font-size: 8px;
+  color: #6b7280;
+  text-align: center;
+}
+
+@media screen and (max-width: 980px) {
+  .sheet {
+    width: 100%;
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .producerSection,
+  .notesSection,
+  .weightCards {
+    grid-template-columns: 1fr;
+  }
+
+  .companyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .documentMeta {
+    text-align: left;
+  }
+
+  .finalTotalsSection {
+    justify-content: flex-start;
+  }
+}
+
+@media print {
+  .sheet {
+    width: 100%;
+    min-height: auto;
+    margin: 0;
+    padding: 8mm;
+    box-shadow: none;
+    background: #ffffff;
+  }
+
+  .companyHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .weightCards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .finalTotalsSection {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .totalLine,
+  .netLine {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .companyHeader,
+  .producerSection,
+  .weightCards,
+  .analysisSection,
+  .finalTotalsSection,
+  .notesSection,
+  .signatureSection {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
