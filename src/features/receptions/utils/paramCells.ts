@@ -228,46 +228,80 @@ export function calculateTotals(
   summaryPenalty: number;
 } {
   const useGroupTolerance = Boolean(options?.useGroupTolerance);
-  const groupToleranceValue = Number(options?.groupToleranceValue ?? 0) || 0;
-  const groupToleranceParams = Object.values(clusters).filter(
-    (cluster) =>
-      cluster.type === 'param' &&
-      cluster.available &&
-      cluster.toleranceGroup &&
-      useGroupTolerance
+  const groupToleranceValue = Math.max(
+    0,
+    Number(options?.groupToleranceValue ?? 0) || 0
   );
-  const distributedGroupTolerance =
-    groupToleranceParams.length > 0
-      ? groupToleranceValue / groupToleranceParams.length
-      : 0;
+
+  const paramClusters = Object.values(clusters).filter(
+    (cluster) => cluster.type === 'param' && cluster.available
+  );
+
+  const groupedParamClusters = paramClusters.filter(
+    (cluster) => useGroupTolerance && cluster.toleranceGroup
+  );
+
+  const individualParamClusters = paramClusters.filter(
+    (cluster) => !(useGroupTolerance && cluster.toleranceGroup)
+  );
+
+  const groupedPercent = groupedParamClusters.reduce(
+    (sum, cluster) => sum + (cluster.percent?.getValue() || 0),
+    0
+  );
+
+  const groupedTolerance =
+    groupedParamClusters.length > 0 ? groupToleranceValue : 0;
+
+  const groupedPenalty = calculatePenalty(groupedPercent, groupedTolerance, netWeight);
 
   let totalDiscounts = 0;
   let summaryPercent = 0;
   let summaryTolerance = 0;
   let summaryPenalty = 0;
 
+  individualParamClusters.forEach((cluster) => {
+    if (!cluster.penalty) {
+      return;
+    }
+
+    const percent = cluster.percent?.getValue() || 0;
+    const tolerance = cluster.tolerance?.getValue() || 0;
+    const penalty = calculatePenalty(percent, tolerance, netWeight);
+
+    cluster.penalty.setValue(penalty);
+
+    summaryPercent += percent;
+    summaryTolerance += tolerance;
+    summaryPenalty += penalty;
+    totalDiscounts += penalty;
+  });
+
+  groupedParamClusters.forEach((cluster) => {
+    if (!cluster.penalty) {
+      return;
+    }
+
+    // Los parametros agrupados se muestran individualmente, pero no descuentan de forma individual.
+    cluster.penalty.setValue(0);
+
+    const percent = cluster.percent?.getValue() || 0;
+    summaryPercent += percent;
+  });
+
+  if (groupedParamClusters.length > 0) {
+    summaryTolerance += groupedTolerance;
+    summaryPenalty += groupedPenalty;
+    totalDiscounts += groupedPenalty;
+  }
+
   Object.values(clusters).forEach((cluster) => {
-    if (cluster.type === 'param' && cluster.available && cluster.penalty) {
-      const percent = cluster.percent?.getValue() || 0;
-      const tolerance =
-        useGroupTolerance && cluster.toleranceGroup
-          ? distributedGroupTolerance
-          : cluster.tolerance?.getValue() || 0;
-      const penalty = calculatePenalty(percent, tolerance, netWeight);
-
-      cluster.penalty.setValue(penalty);
-
-      summaryPercent += percent;
-      summaryTolerance += tolerance;
-      summaryPenalty += penalty;
-      totalDiscounts += penalty;
-    } else if (cluster.type === 'bonus' && cluster.available && cluster.tolerance) {
+    if (cluster.type === 'bonus' && cluster.available && cluster.tolerance) {
       const bonusPercent = cluster.tolerance.getValue() || 0;
       const bonusKg = (bonusPercent * netWeight) / 100;
       cluster.penalty?.setValue(bonusKg);
     } else if (cluster.type === 'dry' && cluster.available && cluster.percent) {
-      // Secado se maneja como porcentaje informativo/configurable y no como una
-      // penalización en kg dentro del total global de descuentos.
+      // Secado es informativo, no descuenta en kg del total.
       cluster.penalty?.setValue(0);
     }
   });

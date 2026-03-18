@@ -1,6 +1,76 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+const LOCAL_BACKEND_API_URL = "http://localhost:3000/api/v1";
+const AUTH_BACKEND_TIMEOUT_MS = 10000;
+
+function resolveBackendApiUrl(): string {
+  const configuredUrl =
+    process.env.BACKEND_API_URL ||
+    process.env.NEXTAUTH_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_API_URL;
+
+  if (configuredUrl && configuredUrl.trim().length > 0) {
+    return configuredUrl.replace(/\/+$/, "");
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    return LOCAL_BACKEND_API_URL;
+  }
+
+  throw new Error("BACKEND_API_URL_NOT_CONFIGURED");
+}
+
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs = AUTH_BACKEND_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function readMessageFromPayload(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const source = payload as Record<string, unknown>;
+  const candidates = [
+    source.message,
+    source.error,
+    (source.data as Record<string, unknown> | undefined)?.message,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) {
+      return candidate;
+    }
+
+    if (Array.isArray(candidate) && candidate.length > 0) {
+      const merged = candidate
+        .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+        .filter(Boolean)
+        .join(" | ");
+
+      if (merged.length > 0) {
+        return merged;
+      }
+    }
+  }
+
+  return null;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -15,35 +85,73 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Call backend API (Paddy Backend on port 3000)
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
+          const apiUrl = resolveBackendApiUrl();
           const loginUrl = `${apiUrl}/auth/login`;
-          
-          console.log("🔐 NextAuth Login Attempt:");
-          console.log(`   URL: ${loginUrl}`);
-          console.log(`   Email: ${credentials.email}`);
 
-          const response = await fetch(loginUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
+          let response: Response;
 
-          console.log(`   Response Status: ${response.status}`);
+          try {
+            response = await fetchWithTimeout(loginUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            });
+          } catch (error) {
+            if (error instanceof Error && error.name === "AbortError") {
+              throw new Error("AUTH_BACKEND_TIMEOUT");
+            }
 
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.log(`   Error Response: ${errorText}`);
-            throw new Error(`Backend returned ${response.status}`);
+            throw new Error("AUTH_BACKEND_UNREACHABLE");
           }
 
-          const data = await response.json();
-          console.log(`   Login Success - User ID: ${data.data.userId}`);
+          const rawResponse = await response.text();
+          let payload: unknown = null;
+
+          if (rawResponse) {
+            try {
+              payload = JSON.parse(rawResponse);
+            } catch {
+              payload = null;
+            }
+          }
+
+          if (response.status === 401 || response.status === 403) {
+            return null;
+          }
+
+          if (!response.ok) {
+            const message =
+              readMessageFromPayload(payload) ||
+              rawResponse.slice(0, 200) ||
+              `Backend returned ${response.status}`;
+            throw new Error(message);
+          }
+
+          if (!payload || typeof payload !== "object") {
+            throw new Error("AUTH_BACKEND_INVALID_JSON_RESPONSE");
+          }
+
+          const data = payload as {
+            data?: {
+              access_token?: string;
+              userId?: string | number;
+              email?: string;
+              name?: string;
+              role?: string;
+            };
+          };
+          const accessToken = data?.data?.access_token;
+          const userId = data?.data?.userId;
+          const email = data?.data?.email;
+
+          if (!accessToken || !userId || !email) {
+            throw new Error("AUTH_BACKEND_INVALID_PAYLOAD");
+          }
 
           // Return user object with token (matching Paddy API response)
           return {
@@ -54,7 +162,7 @@ export const authOptions: NextAuthOptions = {
             accessToken: data.data.access_token,
           };
         } catch (error) {
-          console.error("❌ Login error:", error);
+          console.error("NextAuth login error:", error);
           throw error;
         }
       },
@@ -83,8 +191,8 @@ export const authOptions: NextAuthOptions = {
 
         // Refresh mutable profile fields from backend to avoid stale UI after user edits.
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
-          const meResponse = await fetch(`${apiUrl}/auth/me`, {
+          const apiUrl = resolveBackendApiUrl();
+          const meResponse = await fetchWithTimeout(`${apiUrl}/auth/me`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token.accessToken}`,
@@ -93,7 +201,13 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (meResponse.ok) {
-            const mePayload = await meResponse.json();
+            const rawMePayload = await meResponse.text();
+
+            if (!rawMePayload) {
+              return session;
+            }
+
+            const mePayload = JSON.parse(rawMePayload);
             const meData = mePayload?.data ?? mePayload;
 
             session.user.id = String(meData.userId ?? session.user.id);

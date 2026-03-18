@@ -31,6 +31,7 @@ interface AnalysisRow {
   key: string;
   code: number;
   label: string;
+  rangeValue?: number;
   discountPercent?: number;
   tolerance?: number;
   toleranceVisible: boolean;
@@ -62,6 +63,13 @@ function formatKg(value?: number) {
     return '-';
   }
   return `${formatDecimalSmart(value)} kg`;
+}
+
+function formatRange(value?: number) {
+  if (value === undefined || value === null) {
+    return '-';
+  }
+  return formatDecimalSmart(value);
 }
 
 function toOptionalNumber(value: unknown): number | undefined {
@@ -217,6 +225,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
               key: definition.key,
               code: definition.code,
               label: definition.label,
+              rangeValue: parameterValue,
               discountPercent,
               tolerance,
               toleranceVisible,
@@ -240,7 +249,9 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
     : analysisRows;
 
   const computeRowPenalty = (row: AnalysisRow): number =>
-    row.discountPercent !== undefined
+    row.isInToleranceGroup
+      ? 0
+      : row.discountPercent !== undefined
       ? (reception.netWeight * Math.max(0, row.discountPercent - Number(row.tolerance ?? 0))) /
         100
       : 0;
@@ -252,8 +263,11 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
   const groupPercentTotal = roundTo2(
     groupedRows.reduce((sum, row) => sum + Number(row.discountPercent ?? 0), 0),
   );
+  const groupPenaltyPercent = roundTo2(
+    Math.max(0, groupPercentTotal - Number(groupToleranceTotal ?? 0)),
+  );
   const groupPenaltyKg = roundTo2(
-    groupedRows.reduce((sum, row) => sum + computeRowPenalty(row), 0),
+    (reception.netWeight * groupPenaltyPercent) / 100,
   );
 
   const computedSummaryPercent = roundTo2(
@@ -265,14 +279,15 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
     computedSummaryPercent;
 
   const computedSummaryTolerance = roundTo2(
-    analysisRows.reduce((sum, row) => sum + Number(row.tolerance ?? 0), 0) +
+    nonGroupedRows.reduce((sum, row) => sum + Number(row.tolerance ?? 0), 0) +
       (hasToleranceGroup ? Number(groupToleranceTotal ?? 0) : 0),
   );
   const summaryTolerance =
     toOptionalNumber(analysis?.summaryTolerance) ?? computedSummaryTolerance;
 
   const computedSummaryPenaltyKg = roundTo2(
-    analysisRows.reduce((sum, row) => sum + computeRowPenalty(row), 0),
+    nonGroupedRows.reduce((sum, row) => sum + computeRowPenalty(row), 0) +
+      (hasToleranceGroup ? groupPenaltyKg : 0),
   );
   const summaryPenaltyKg =
     toOptionalNumber(analysis?.summaryPenaltyKg) ?? computedSummaryPenaltyKg;
@@ -403,6 +418,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
             <thead>
               <tr>
                 <th>Parametro</th>
+                <th className={styles.rightAlign}>Rango</th>
                 <th className={styles.rightAlign}>% Desc.</th>
                 <th className={styles.rightAlign}>Tolerancia</th>
                 <th className={styles.rightAlign}>Descuento Neto</th>
@@ -417,6 +433,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
                     return (
                       <tr key={row.key}>
                         <td>{row.label}</td>
+                        <td className={styles.rightAlign}>{formatRange(row.rangeValue)}</td>
                         <td className={styles.rightAlign}>{formatPercent(row.discountPercent)}</td>
                         <td className={styles.rightAlign}>
                           {row.toleranceVisible ? formatPercent(row.tolerance) : '-'}
@@ -431,23 +448,25 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
                   {hasToleranceGroup && (
                     <>
                       <tr className={styles.groupHeaderRow}>
-                        <td colSpan={4} className={styles.groupHeaderCell}>
+                        <td colSpan={5} className={styles.groupHeaderCell}>
                           {analysis?.groupToleranceName || 'Grupo de Tolerancia'}
                         </td>
                       </tr>
 
                       {groupedRows.map((row) => {
-                        const discountKg = computeRowPenalty(row);
+                        const discountKg = 0;
+                        const rowTolerance = 0;
 
                         return (
                           <tr key={row.key}>
                             <td>{row.label}</td>
+                            <td className={styles.rightAlign}>{formatRange(row.rangeValue)}</td>
                             <td className={styles.rightAlign}>{formatPercent(row.discountPercent)}</td>
                             <td className={styles.rightAlign}>
-                              {row.toleranceVisible ? formatPercent(row.tolerance) : '-'}
+                              {formatPercent(rowTolerance)}
                             </td>
                             <td className={styles.rightAlign}>
-                              {discountKg > 0 ? formatKg(discountKg) : '-'}
+                              {formatKg(discountKg)}
                             </td>
                           </tr>
                         );
@@ -455,6 +474,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
 
                       <tr className={styles.groupFooterRow}>
                         <td></td>
+                        <td className={styles.rightAlign}>-</td>
                         <td className={styles.rightAlign}>{formatPercent(groupPercentTotal)}</td>
                         <td className={styles.rightAlign}>{formatPercent(groupToleranceTotal)}</td>
                         <td className={styles.rightAlign}>{formatKg(groupPenaltyKg)}</td>
@@ -464,7 +484,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
                 </>
               ) : (
                 <tr>
-                  <td colSpan={4} className={styles.emptyRow}>
+                  <td colSpan={5} className={styles.emptyRow}>
                     El analisis existe, pero no tiene valores cargados para esta impresion.
                   </td>
                 </tr>
@@ -472,6 +492,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
 
               <tr className={styles.analysisFooterRow}>
                 <td>Total Analisis Laboratorio</td>
+                <td className={styles.rightAlign}>-</td>
                 <td className={styles.rightAlign}>{formatPercent(summaryPercent)}</td>
                 <td className={styles.rightAlign}>{formatPercent(summaryTolerance)}</td>
                 <td className={styles.rightAlign}>{formatKg(summaryPenaltyKg)}</td>
@@ -519,16 +540,18 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
       </section>
 
       <section className={styles.signatureSection}>
-        <img
-          src="/timbre.png"
-          alt="Timbre"
-          className={styles.signatureStamp}
-        />
-        <div className={styles.signatureLine}>
-          <p className={styles.signatureLabel}>Representante Autorizado</p>
-          <p className={styles.signatureCompany}>
-            Sociedad Comercial e Industrial Aparicio y Garcia Ltda.
-          </p>
+        <div className={styles.signatureBlock}>
+          <img
+            src="/timbre.png"
+            alt="Timbre"
+            className={styles.signatureStamp}
+          />
+          <div className={styles.signatureLine}>
+            <p className={styles.signatureLabel}>Representante Autorizado</p>
+            <p className={styles.signatureCompany}>
+              Sociedad Comercial e Industrial Aparicio y Garcia Ltda.
+            </p>
+          </div>
         </div>
       </section>
 

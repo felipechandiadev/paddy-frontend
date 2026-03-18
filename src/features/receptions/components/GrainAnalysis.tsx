@@ -188,12 +188,53 @@ export default function GrainAnalysis() {
   const groupToleranceParams = paramClusters.filter((c) => c.toleranceGroup && useGroupTolerance);
 
   // Logica de Tolerancia Grupal:
-  // - Es un presupuesto total que se divide entre todos los parámetros en el grupo
-  // - Ejemplo: Si tolerancia grupal = 5% y hay 2 parámetros en grupo -> cada uno obtiene 5% / 2 = 2.5%
-  const distributedGroupTolerance = groupToleranceParams.length > 0 
-    ? Number(groupToleranceValue) / groupToleranceParams.length 
-    : 0;
+  // - Los parámetros dentro del grupo NO usan tolerancia individual (siempre 0)
+  // - La tolerancia grupal se aplica una sola vez al total del grupo
+  const groupedParamTolerance = 0;
   const groupedParamLabel = groupToleranceParams.length === 1 ? 'parámetro' : 'parámetros';
+  const groupTotalPercent = groupToleranceParams.reduce(
+    (sum, cluster) => sum + Number(cluster.percent?.getValue() ?? 0),
+    0,
+  );
+  const groupTotalTolerance =
+    useGroupTolerance && groupToleranceParams.length > 0
+      ? Number(groupToleranceValue ?? 0)
+      : 0;
+  const groupPenaltyPercent = Math.max(0, groupTotalPercent - groupTotalTolerance);
+  const groupTotalPenalty = (groupPenaltyPercent * Number(data.netWeight ?? 0)) / 100;
+
+  const shouldHideGroupInSummary = useGroupTolerance && groupToleranceParams.length > 0;
+  const summaryRawPercent = Number(summaryCluster?.percent?.getValue() ?? 0);
+  const summaryRawTolerance = Number(summaryCluster?.tolerance?.getValue() ?? 0);
+  const summaryRawPenalty = Number(summaryCluster?.penalty?.getValue() ?? 0);
+
+  const nonGroupedPercentTotal = paramClusters
+    .filter((cluster) => !cluster.toleranceGroup)
+    .reduce((sum, cluster) => sum + Number(cluster.percent?.getValue() ?? 0), 0);
+
+  const nonGroupedPenaltyTotal = paramClusters
+    .filter((cluster) => !cluster.toleranceGroup)
+    .reduce((sum, cluster) => sum + Number(cluster.penalty?.getValue() ?? 0), 0);
+
+  const roundTo2 = (value: number) => Math.round(value * 100) / 100;
+  const summaryPercentDisplay = shouldHideGroupInSummary
+    ? roundTo2(nonGroupedPercentTotal + groupTotalPercent)
+    : roundTo2(summaryRawPercent);
+
+  const summaryPenaltyDisplay = shouldHideGroupInSummary
+    ? roundTo2(nonGroupedPenaltyTotal + groupTotalPenalty)
+    : roundTo2(summaryRawPenalty);
+
+  const summaryValuesOverride = shouldHideGroupInSummary
+    ? {
+        // El porcentaje total del resumen debe incluir no-grupo + grupo.
+        percent: summaryPercentDisplay,
+        // La tolerancia mostrada debe ser la suma total del analisis.
+        tolerance: roundTo2(summaryRawTolerance),
+        // La penalizacion total siempre incluye: no-grupo + grupo.
+        penalty: summaryPenaltyDisplay,
+      }
+    : undefined;
 
   const containerClassName = isLoading
     ? 'w-full min-h-[560px] flex items-center justify-center'
@@ -293,12 +334,43 @@ export default function GrainAnalysis() {
                               handleRowShowToleranceChange(cluster.key, visible)
                             }
                             useGroupTolerance={true}
-                            groupToleranceValue={distributedGroupTolerance}
+                            groupToleranceValue={groupedParamTolerance}
                             showVisibilityButton={true}
                             version={version}
                           />
                         </div>
                       ))}
+
+                      <div className="flex flex-row gap-1 items-center px-2 py-1 text-xs font-semibold bg-secondary-20 border border-secondary rounded">
+                        <div style={{ width: '156px' }}>
+                          <div className="bg-white/80 px-2 py-1 rounded text-cyan-700 text-center h-8 flex items-center justify-center">
+                            Total Grupo Tol.
+                          </div>
+                        </div>
+                        <div style={{ width: '130px' }}>
+                          <div className="bg-white/80 px-2 py-1 rounded text-gray-500 text-center h-8 flex items-center justify-center">
+                            -
+                          </div>
+                        </div>
+                        <div style={{ width: '130px' }}>
+                          <div className="bg-blue-50 px-2 py-1 rounded text-blue-700 text-center h-8 flex items-center justify-center">
+                            {groupTotalPercent.toFixed(2)}
+                          </div>
+                        </div>
+                        <div style={{ width: '130px' }}>
+                          <div className="bg-yellow-50 px-2 py-1 rounded text-yellow-800 text-center h-8 flex items-center justify-center">
+                            {groupTotalTolerance.toFixed(2)}
+                          </div>
+                        </div>
+                        <div style={{ width: '40px' }} className="flex justify-center">
+                          <div style={{ width: '40px' }} />
+                        </div>
+                        <div style={{ width: '130px' }}>
+                          <div className="bg-red-50 border border-red-100 text-red-600 px-2 py-1 rounded text-center h-8 flex items-center justify-center">
+                            {groupTotalPenalty.toFixed(2)} kg
+                          </div>
+                        </div>
+                      </div>
                     </>
                   )}
                 </>
@@ -315,6 +387,7 @@ export default function GrainAnalysis() {
                 groupToleranceValue={0}
                 showVisibilityButton={false}
                 isSummary={true}
+                summaryValuesOverride={summaryValuesOverride}
                 version={version}
               />
             )}
@@ -377,7 +450,7 @@ export default function GrainAnalysis() {
                     {groupToleranceParams.length} {groupedParamLabel}
                   </span>
                   <span className="text-xs font-semibold text-cyan-700 bg-white/80 border border-secondary rounded px-2 py-1">
-                    {distributedGroupTolerance.toFixed(2)}% por parámetro
+                    {groupedParamTolerance.toFixed(2)}% por parámetro
                   </span>
                 </>
               )}

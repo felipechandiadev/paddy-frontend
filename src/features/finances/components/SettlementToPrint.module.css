@@ -359,29 +359,32 @@
 
 .signatureSection {
   margin-top: 3.25rem;
-  position: relative;
-  min-height: 118px;
-  padding-top: 0.9rem;
-  padding-right: 0.8rem;
-  margin-right: 0.5rem;
   display: flex;
   justify-content: flex-end;
 }
 
+.signatureBlock {
+  position: relative;
+  width: min(260px, 100%);
+  min-height: 118px;
+  display: flex;
+  align-items: flex-end;
+}
+
 .signatureStamp {
   position: absolute;
-  right: -8px;
+  left: 50%;
   top: -42px;
   width: 119px;
   height: auto;
-  transform: rotate(-19deg);
+  transform: translateX(-50%) rotate(-19deg);
   opacity: 0.88;
   z-index: 4;
   pointer-events: none;
 }
 
 .signatureLine {
-  width: 260px;
+  width: 100%;
   border-top: 1px solid #111827;
   padding-top: 0.35rem;
   text-align: center;

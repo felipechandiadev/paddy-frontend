@@ -415,18 +415,12 @@ function CreateReceptionDialogContent({
       'GranosYesosos',
     ] as const;
 
-    const groupedParamsCount = paramKeys.filter((key) => Boolean(clusters[key].toleranceGroup)).length;
-    const distributedGroupTolerance =
-      template.useToleranceGroup && groupedParamsCount > 0
-        ? Number(template.groupToleranceValue ?? 0) / groupedParamsCount
-        : 0;
-
     const resolveTolerance = (clusterKey: (typeof paramKeys)[number]): number => {
       const cluster = clusters[clusterKey];
       const fallbackTolerance = Number(cluster.tolerance?.getValue() ?? 0);
 
-      if (template.useToleranceGroup && cluster.toleranceGroup && groupedParamsCount > 0) {
-        return distributedGroupTolerance;
+      if (template.useToleranceGroup && cluster.toleranceGroup) {
+        return 0;
       }
 
       return fallbackTolerance;

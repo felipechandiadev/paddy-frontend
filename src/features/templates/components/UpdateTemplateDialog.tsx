@@ -177,7 +177,14 @@ export default function UpdateTemplateDialog({
   ) => {
     setParameters((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
+      const nextParameter = { ...updated[index], [field]: value };
+
+      if (field === 'groupTolerance' && value === true) {
+        nextParameter.tolerance = 0;
+        nextParameter.showTolerance = false;
+      }
+
+      updated[index] = nextParameter;
       return updated;
     });
   };
@@ -190,6 +197,11 @@ export default function UpdateTemplateDialog({
     setLoading(true);
 
     try {
+      const getToleranceForPayload = (param: ParameterConfig): number =>
+        useToleranceGroup && param.groupTolerance ? 0 : param.tolerance;
+      const getShowToleranceForPayload = (param: ParameterConfig): boolean =>
+        useToleranceGroup && param.groupTolerance ? false : param.showTolerance;
+
       // Construir payload completo con todos los parámetros
       const payload: Partial<Template> = {
         name: formData.name,
@@ -203,57 +215,57 @@ export default function UpdateTemplateDialog({
         // Humedad
         availableHumedad: parameters[0].available,
         percentHumedad: parameters[0].percent,
-        toleranceHumedad: parameters[0].tolerance,
-        showToleranceHumedad: parameters[0].showTolerance,
+        toleranceHumedad: getToleranceForPayload(parameters[0]),
+        showToleranceHumedad: getShowToleranceForPayload(parameters[0]),
         groupToleranceHumedad: parameters[0].groupTolerance,
 
         // Granos Verdes
         availableGranosVerdes: parameters[1].available,
         percentGranosVerdes: parameters[1].percent,
-        toleranceGranosVerdes: parameters[1].tolerance,
-        showToleranceGranosVerdes: parameters[1].showTolerance,
+        toleranceGranosVerdes: getToleranceForPayload(parameters[1]),
+        showToleranceGranosVerdes: getShowToleranceForPayload(parameters[1]),
         groupToleranceGranosVerdes: parameters[1].groupTolerance,
 
         // Impurezas
         availableImpurezas: parameters[2].available,
         percentImpurezas: parameters[2].percent,
-        toleranceImpurezas: parameters[2].tolerance,
-        showToleranceImpurezas: parameters[2].showTolerance,
+        toleranceImpurezas: getToleranceForPayload(parameters[2]),
+        showToleranceImpurezas: getShowToleranceForPayload(parameters[2]),
         groupToleranceImpurezas: parameters[2].groupTolerance,
 
         // Vano
         availableVano: parameters[3].available,
         percentVano: parameters[3].percent,
-        toleranceVano: parameters[3].tolerance,
-        showToleranceVano: parameters[3].showTolerance,
+        toleranceVano: getToleranceForPayload(parameters[3]),
+        showToleranceVano: getShowToleranceForPayload(parameters[3]),
         groupToleranceVano: parameters[3].groupTolerance,
 
         // Hualcacho
         availableHualcacho: parameters[4].available,
         percentHualcacho: parameters[4].percent,
-        toleranceHualcacho: parameters[4].tolerance,
-        showToleranceHualcacho: parameters[4].showTolerance,
+        toleranceHualcacho: getToleranceForPayload(parameters[4]),
+        showToleranceHualcacho: getShowToleranceForPayload(parameters[4]),
         groupToleranceHualcacho: parameters[4].groupTolerance,
 
         // Granos Manchados
         availableGranosManchados: parameters[5].available,
         percentGranosManchados: parameters[5].percent,
-        toleranceGranosManchados: parameters[5].tolerance,
-        showToleranceGranosManchados: parameters[5].showTolerance,
+        toleranceGranosManchados: getToleranceForPayload(parameters[5]),
+        showToleranceGranosManchados: getShowToleranceForPayload(parameters[5]),
         groupToleranceGranosManchados: parameters[5].groupTolerance,
 
         // Granos Pelados
         availableGranosPelados: parameters[6].available,
         percentGranosPelados: parameters[6].percent,
-        toleranceGranosPelados: parameters[6].tolerance,
-        showToleranceGranosPelados: parameters[6].showTolerance,
+        toleranceGranosPelados: getToleranceForPayload(parameters[6]),
+        showToleranceGranosPelados: getShowToleranceForPayload(parameters[6]),
         groupToleranceGranosPelados: parameters[6].groupTolerance,
 
         // Granos Yesosos
         availableGranosYesosos: parameters[7].available,
         percentGranosYesosos: parameters[7].percent,
-        toleranceGranosYesosos: parameters[7].tolerance,
-        showToleranceGranosYesosos: parameters[7].showTolerance,
+        toleranceGranosYesosos: getToleranceForPayload(parameters[7]),
+        showToleranceGranosYesosos: getShowToleranceForPayload(parameters[7]),
         groupToleranceGranosYesosos: parameters[7].groupTolerance,
 
         // Bonificación
@@ -372,6 +384,7 @@ export default function UpdateTemplateDialog({
               <tbody className="divide-y divide-gray-100">
                 {parameters.map((param, idx) => {
                   const isSpecial = ['Bonificación', 'Secado'].includes(param.name);
+                  const isToleranceLocked = useToleranceGroup && param.groupTolerance;
                   
                   return (
                     <tr 
@@ -439,13 +452,20 @@ export default function UpdateTemplateDialog({
                             type="number"
                             value={param.tolerance}
                             onChange={(e) => handleParameterChange(idx, 'tolerance', parseFloat(e.target.value) || 0)}
-                            disabled={!param.available}
+                            disabled={!param.available || isToleranceLocked}
                             step="0.1"
                             min="0"
+                            title={
+                              isToleranceLocked
+                                ? 'La tolerancia se distribuye desde el grupo para este parámetro'
+                                : undefined
+                            }
                             className={`w-20 px-3 py-1.5 text-sm border rounded-md transition-all outline-none text-center ${
-                              param.available 
-                                ? 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white' 
-                                : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                              !param.available
+                                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                : isToleranceLocked
+                                  ? 'bg-blue-50 text-blue-700 border-blue-200 cursor-not-allowed'
+                                  : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white'
                             }`}
                           />
                         ) : (
@@ -458,7 +478,7 @@ export default function UpdateTemplateDialog({
                             <Switch
                               checked={param.showTolerance}
                               onChange={(checked) => handleParameterChange(idx, 'showTolerance', checked)}
-                              disabled={!param.available}
+                              disabled={!param.available || isToleranceLocked}
                             />
                           ) : (
                             <span className="text-gray-300">—</span>

@@ -18,6 +18,40 @@ const initialValues: LoginValues = {
   password: "",
 };
 
+function getLoginErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error || "");
+
+  if (
+    message.includes("AUTH_BACKEND_TIMEOUT") ||
+    message.includes("AUTH_BACKEND_UNREACHABLE") ||
+    message.includes("AUTH_BACKEND_INVALID_JSON_RESPONSE") ||
+    message.includes("BACKEND_API_URL_NOT_CONFIGURED") ||
+    message.includes("valid JSON")
+  ) {
+    return "No fue posible conectar con el servidor. Intenta nuevamente en unos segundos.";
+  }
+
+  return "Error al iniciar sesión. Intenta nuevamente.";
+}
+
+function getSignInResultErrorMessage(error: string): string {
+  if (error === "CredentialsSignin") {
+    return "Usuario o contraseña incorrectos.";
+  }
+
+  if (
+    error.includes("AUTH_BACKEND_TIMEOUT") ||
+    error.includes("AUTH_BACKEND_UNREACHABLE") ||
+    error.includes("AUTH_BACKEND_INVALID_JSON_RESPONSE") ||
+    error.includes("BACKEND_API_URL_NOT_CONFIGURED") ||
+    error.includes("CallbackRouteError")
+  ) {
+    return "No fue posible conectar con el servidor. Intenta nuevamente en unos segundos.";
+  }
+
+  return "Error al iniciar sesión. Intenta nuevamente.";
+}
+
 const LoginForm: React.FC = () => {
   const [values, setValues] = useState<LoginValues>(initialValues);
   const [loading, setLoading] = useState(false);
@@ -29,15 +63,17 @@ const LoginForm: React.FC = () => {
     setError(null);
     setLoading(true);
 
+    const normalizedEmail = values.email.trim().toLowerCase();
+
     try {
       const result = await signIn("credentials", {
-        email: values.email,
+        email: normalizedEmail,
         password: values.password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError("Usuario o contraseña incorrectos");
+        setError(getSignInResultErrorMessage(result.error));
         setLoading(false);
         return;
       }
@@ -47,8 +83,11 @@ const LoginForm: React.FC = () => {
         router.push("/paddy");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError("Error al iniciar sesión. Intenta nuevamente.");
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Login error:", error);
+      }
+
+      setError(getLoginErrorMessage(error));
       setLoading(false);
     }
   };

@@ -17,6 +17,12 @@ interface GrainRowProps {
   groupToleranceValue: number;
   showVisibilityButton?: boolean;
   isSummary?: boolean;
+  hideSummaryTolerance?: boolean;
+  summaryValuesOverride?: {
+    percent: number;
+    tolerance: number;
+    penalty: number;
+  };
   version?: number; // Para sincronizarse con cambios en el hook
 }
 
@@ -45,6 +51,8 @@ export default function GrainRow({
   groupToleranceValue,
   showVisibilityButton = false,
   isSummary = false,
+  hideSummaryTolerance = false,
+  summaryValuesOverride,
   version = 0,
 }: GrainRowProps) {
   if (!cluster.available && !isSummary) {
@@ -94,6 +102,18 @@ export default function GrainRow({
   const penaltyValue = Number(cluster.penalty?.getValue() ?? 0) || 0;
   const percentDisplayValue = Number(cluster.percent?.getValue() ?? 0) || 0;
   const toleranceTotalValue = Number(cluster.tolerance?.getValue() ?? 0) || 0;
+
+  const summaryPercentDisplayValue = isSummary
+    ? Number(summaryValuesOverride?.percent ?? percentDisplayValue)
+    : percentDisplayValue;
+
+  const summaryToleranceDisplayValue = isSummary
+    ? Number(summaryValuesOverride?.tolerance ?? toleranceTotalValue)
+    : toleranceTotalValue;
+
+  const summaryPenaltyDisplayValue = isSummary
+    ? Number(summaryValuesOverride?.penalty ?? penaltyValue)
+    : penaltyValue;
 
   const formatPenaltyDecimal = (value: number) =>
     new Intl.NumberFormat('es-CL', {
@@ -226,7 +246,7 @@ export default function GrainRow({
       <div style={{ width: '130px' }}>
         {isSummary ? (
           <div className="bg-blue-50 px-2 py-1 rounded text-xs font-semibold text-blue-700 text-center h-8 flex items-center justify-center">
-            {percentDisplayValue.toFixed(2)}
+            {summaryPercentDisplayValue.toFixed(2)}
           </div>
         ) : isBonus ? (
           <TextField
@@ -266,9 +286,13 @@ export default function GrainRow({
       {/* Columna 4: Tolerancia (130px) */}
       <div style={{ width: '130px' }}>
         {isSummary ? (
-          <div className="bg-yellow-50 px-2 py-1 rounded text-xs font-semibold text-yellow-800 text-center h-8 flex items-center justify-center">
-            {toleranceTotalValue.toFixed(2)}
-          </div>
+          hideSummaryTolerance ? (
+            <div className="h-8" aria-hidden="true" />
+          ) : (
+            <div className="bg-yellow-50 px-2 py-1 rounded text-xs font-semibold text-yellow-800 text-center h-8 flex items-center justify-center">
+              {summaryToleranceDisplayValue.toFixed(2)}
+            </div>
+          )
         ) : isBonus ? (
           <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-500 text-center h-8 flex items-center justify-center">
             —
@@ -327,7 +351,7 @@ export default function GrainRow({
           </div>
         ) : (
           <div className={`${isSummary ? 'bg-red-100 border border-red-200 text-red-700' : 'bg-red-50 border border-red-100 text-red-600'} px-2 py-1 rounded text-xs font-semibold text-center h-8 flex items-center justify-center`}>
-            {formatPenaltyDecimal(penaltyValue)} kg
+            {formatPenaltyDecimal(summaryPenaltyDisplayValue)} kg
           </div>
         )}
       </div>

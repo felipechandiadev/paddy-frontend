@@ -645,16 +645,18 @@ export default function SettlementToPrint({ settlement }: SettlementToPrintProps
       </section>
 
       <section className={styles.signatureSection}>
-        <img
-          src="/timbre.png"
-          alt="Timbre"
-          className={styles.signatureStamp}
-        />
-        <div className={styles.signatureLine}>
-          <p className={styles.signatureLabel}>Representante Autorizado</p>
-          <p className={styles.signatureCompany}>
-            Sociedad Comercial e Industrial Aparicio y Garcia Ltda.
-          </p>
+        <div className={styles.signatureBlock}>
+          <img
+            src="/timbre.png"
+            alt="Timbre"
+            className={styles.signatureStamp}
+          />
+          <div className={styles.signatureLine}>
+            <p className={styles.signatureLabel}>Representante Autorizado</p>
+            <p className={styles.signatureCompany}>
+              Sociedad Comercial e Industrial Aparicio y Garcia Ltda.
+            </p>
+          </div>
         </div>
       </section>
 
