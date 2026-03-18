@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" }
       },
-      async authorize(credentials) {
+      async authorize(credentials, _req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales inválidas");
         }
@@ -148,18 +148,19 @@ export const authOptions: NextAuthOptions = {
           const accessToken = data?.data?.access_token;
           const userId = data?.data?.userId;
           const email = data?.data?.email;
+          const role = data?.data?.role;
 
-          if (!accessToken || !userId || !email) {
+          if (!accessToken || !userId || !email || !role) {
             throw new Error("AUTH_BACKEND_INVALID_PAYLOAD");
           }
 
           // Return user object with token (matching Paddy API response)
           return {
-            id: data.data.userId,
-            name: data.data.name || data.data.email,
-            email: data.data.email,
-            role: data.data.role,
-            accessToken: data.data.access_token,
+            id: String(userId),
+            name: data.data?.name || email,
+            email,
+            role,
+            accessToken,
           };
         } catch (error) {
           console.error("NextAuth login error:", error);
