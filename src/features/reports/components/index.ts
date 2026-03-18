@@ -6,3 +6,4 @@ export { default as ProcessYieldReport } from './ProcessYieldReport';
 export { default as CashProjectionReport } from './CashProjectionReport';
 export { default as VolumePriceReport } from './VolumePriceReport';
 export { default as InventoryBookReport } from './InventoryBookReport';
+export { default as RicePriceReport } from './RicePriceReport';

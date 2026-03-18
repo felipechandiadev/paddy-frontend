@@ -8,9 +8,10 @@ interface UserCardProps {
   user: User;
   onEdit?: (user: User) => void;
   onDelete?: (user: User) => void;
+  onManagePermissions?: (user: User) => void;
 }
 
-export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
+export default function UserCard({ user, onEdit, onDelete, onManagePermissions }: UserCardProps) {
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'ADMIN':
@@ -73,6 +74,13 @@ export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 
       {/* Footer de acciones */}
       <div className="flex gap-2 justify-end pt-2 border-t border-gray-200">
+        <IconButton
+          icon="manage_accounts"
+          variant="basicSecondary"
+          size="sm"
+          onClick={() => onManagePermissions?.(user)}
+          title="Gestionar permisos"
+        />
         <IconButton
           icon="edit"
           variant="basicSecondary"

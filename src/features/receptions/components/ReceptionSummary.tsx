@@ -9,7 +9,13 @@ export default function ReceptionSummary() {
   // Usar los valores calculados del contexto
   const totalDiscounts = data.totalDiscounts;
   const bonus = data.bonus;
-  const paddyNet = data.paddyNet;
+  const paddyNet = Math.floor(data.paddyNet);
+
+  // Custom rounding: <0.5 round down, >=0.5 round up
+  const customRound = (value: number) => {
+    if (typeof value !== 'number') return 0;
+    return Math.floor(value) + (value - Math.floor(value) >= 0.5 ? 1 : 0);
+  };
 
   // Formato de moneda
   const formatCurrency = (value: number) => {
@@ -17,15 +23,13 @@ export default function ReceptionSummary() {
       style: 'currency',
       currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(value);
+    }).format(customRound(value));
   };
 
-  // Formato de decimal con 2 dígitos
-  const formatDecimal = (value: number) => {
-    return new Intl.NumberFormat('es-CL', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
+  // Mostrar solo el entero, con separador de miles
+  const formatInteger = (value: number) => {
+    const rounded = customRound(value);
+    return rounded.toLocaleString('es-CL');
   };
 
   return (
@@ -38,19 +42,19 @@ export default function ReceptionSummary() {
         
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-700">Peso Bruto:</span>
-          <span className="font-medium text-gray-900">{formatDecimal(data.grossWeight)} kg</span>
+          <span className="font-medium text-gray-900">{formatInteger(data.grossWeight)} kg</span>
         </div>
         
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-700">Tara:</span>
-          <span className="font-medium text-gray-900">{formatDecimal(data.tare)} kg</span>
+          <span className="font-medium text-gray-900">{formatInteger(data.tare)} kg</span>
         </div>
 
         <div className="border-t border-gray-300 my-1"></div>
 
         <div className="flex justify-between items-center font-semibold text-sm">
           <span className="text-gray-900">Peso Neto:</span>
-          <span className="text-blue-600">{formatDecimal(data.netWeight)} kg</span>
+          <span className="text-blue-600">{formatInteger(data.netWeight)} kg</span>
         </div>
       </div>
 
@@ -60,12 +64,12 @@ export default function ReceptionSummary() {
         
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-700">Total Descuentos:</span>
-          <span className="font-semibold text-red-600">{formatDecimal(totalDiscounts)} kg</span>
+          <span className="font-semibold text-red-600">{formatInteger(totalDiscounts)} kg</span>
         </div>
 
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-700">Bonificación:</span>
-          <span className="font-semibold text-green-600">+{formatDecimal(bonus)} kg</span>
+          <span className="font-semibold text-green-600">+{formatInteger(bonus)} kg</span>
         </div>
       </div>
 
@@ -73,7 +77,7 @@ export default function ReceptionSummary() {
       <div className="space-y-2 p-3 bg-blue-100/35 rounded border border-blue-200/70">
         <div className="flex justify-between items-center font-bold text-lg">
           <span className="text-gray-900">Paddy Neto:</span>
-          <span className="text-blue-700">{formatDecimal(paddyNet)} kg</span>
+          <span className="text-blue-700">{formatInteger(paddyNet)} kg</span>
         </div>
 
         <div className="border-t border-blue-200 my-1"></div>

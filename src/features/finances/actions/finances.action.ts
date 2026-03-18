@@ -3,6 +3,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth.config';
 import { throwIfBackendUnavailable } from '@/lib/api/backend-connection-error';
+import { getAuditHeaders } from '@/lib/audit-headers';
 import {
   Advance,
   AdvanceDetails,
@@ -590,7 +591,7 @@ function normalizeSettlementReceptionCandidate(
 function getAuthHeaders(token: string): HeadersInit {
   return {
     'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    ...getAuditHeaders(),
   };
 }
 

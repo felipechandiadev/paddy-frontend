@@ -126,15 +126,19 @@ export default function ReceptionGeneralData({
   // Cargar plantilla por defecto
   useEffect(() => {
     if (disableDefaultTemplateLoad) {
+      console.log('[TEMPLATE] Carga de plantilla deshabilitada (isEditMode)');
       return;
     }
 
+    console.log('[TEMPLATE] Iniciando carga de plantilla por defecto');
     const loadDefaultTemplate = async () => {
       try {
         const defaultTemplate = await fetchDefaultTemplate();
         if (defaultTemplate) {
+          console.log('[TEMPLATE] Plantilla por defecto cargada:', defaultTemplate);
           setCurrentTemplateName(defaultTemplate.name);
           setData('templateId', Number(defaultTemplate.id) || 0);
+          console.log('[TEMPLATE] templateId seteado a:', Number(defaultTemplate.id) || 0);
           // Actualizar el contexto con TODOS los campos de la plantilla por defecto
           setTemplate({
             useToleranceGroup: defaultTemplate.useToleranceGroup ?? true,

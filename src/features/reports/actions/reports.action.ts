@@ -19,6 +19,8 @@ import {
   ProcessYieldFilters,
   ProcessYieldReportResponse,
   ReportActionResult,
+  RicePriceReportFilters,
+  RicePriceReportResponse,
   VolumePriceByProducerReportResponse,
   VolumePriceProducerDetailReportResponse,
   VolumePriceReportFilters,
@@ -902,6 +904,84 @@ export async function fetchProcessYieldReport(
         error instanceof Error
           ? error.message
           : 'Error inesperado al obtener el Reporte 5.',
+    };
+  }
+}
+
+export async function fetchRicePriceReport(
+  filters: RicePriceReportFilters,
+): Promise<ReportActionResult<RicePriceReportResponse>> {
+  try {
+    const session = await getServerSession(authOptions);
+    const token = (session?.user as any)?.accessToken;
+
+    if (!token) {
+      return {
+        success: false,
+        data: null,
+        error: 'No hay sesión activa para consultar el reporte.',
+      };
+    }
+
+    const headers = getAuthHeaders(token);
+    const query = new URLSearchParams();
+
+    query.set('fechaInicio', filters.fechaInicio);
+    query.set('fechaFin', filters.fechaFin);
+
+    if (filters.riceTypeId) {
+      query.set('riceTypeId', String(filters.riceTypeId));
+    }
+
+    if (filters.groupBy) {
+      query.set('groupBy', filters.groupBy);
+    }
+
+    const response = await fetch(
+      `${ANALYTICS_API_BASE_URL}/rice-price?${query.toString()}`,
+      {
+        headers,
+        cache: 'no-store',
+      },
+    );
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return {
+          success: false,
+          data: null,
+          error: 'SESSION_EXPIRED',
+        };
+      }
+
+      const error = await parseErrorMessage(
+        response,
+        `No fue posible obtener el reporte de precios (${response.status}).`,
+      );
+
+      return {
+        success: false,
+        data: null,
+        error,
+      };
+    }
+
+    const payload = await response.json();
+
+    return {
+      success: true,
+      data: normalizePayload<RicePriceReportResponse>(payload),
+    };
+  } catch (error) {
+    throwIfBackendUnavailable(error);
+
+    return {
+      success: false,
+      data: null,
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Error inesperado al obtener el reporte de precios.',
     };
   }
 }

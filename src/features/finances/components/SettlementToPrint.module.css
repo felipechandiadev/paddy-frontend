@@ -374,7 +374,7 @@
 .signatureStamp {
   position: absolute;
   left: 50%;
-  top: -42px;
+  top: 39px;
   width: 119px;
   height: auto;
   transform: translateX(-50%) rotate(-19deg);

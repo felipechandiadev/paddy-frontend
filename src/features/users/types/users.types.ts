@@ -12,3 +12,13 @@ export interface UsersResponse {
   data: User[];
   timestamp: string;
 }
+
+export interface PermissionOverride {
+  permissionKey: string;
+  effect: 'GRANT' | 'REVOKE';
+}
+
+export interface UserPermissionsData {
+  effective: string[];
+  overrides: PermissionOverride[];
+}

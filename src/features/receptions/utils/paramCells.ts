@@ -353,7 +353,12 @@ export function validateParamCluster(cluster: ParamCluster, netWeight: number): 
   }
 
   // Validación 2: Tolerancia no puede exceder porcentaje
-  // PERO: si percent es 0, se permite tolerance 0 (parámetro sin configurar)
+  // Si percent es 0, se permite tolerance 0 (parámetro sin configurar)
+  if (percent === 0 && tolerance === 0) {
+    cluster.tolerance.state.error = false;
+    cluster.tolerance.state.errorMessage = '';
+    return true;
+  }
   if (percent > 0 && tolerance > percent) {
     cluster.tolerance.state.error = true;
     cluster.tolerance.state.errorMessage = 'La tolerancia no puede exceder el porcentaje';

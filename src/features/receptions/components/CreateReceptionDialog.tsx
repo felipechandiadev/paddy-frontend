@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { validateParamCluster } from '../utils/paramCells';
+
 import { Button } from '@/shared/components/ui/Button/Button';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import { PrintDialog } from '@/shared/components/PrintDialog';
@@ -9,6 +11,7 @@ import {
   fetchReceptionAnalysis,
   fetchReceptionById,
   updateReceptionAndAnalysis,
+  fetchLastReception,
 } from '../actions/fetch.action';
 import { ReceptionProvider } from '../context/ReceptionContext';
 import { useReceptionContext } from '../context/ReceptionContext';
@@ -22,6 +25,7 @@ import ReceptionGeneralData from './ReceptionGeneralData';
 import GrainAnalysis from './GrainAnalysis';
 import ReceptionSummary from './ReceptionSummary';
 import ReceptionToPrint from './ReceptionToPrint';
+import DotProgress from '@/shared/components/ui/DotProgress/DotProgress';
 
 interface CreateReceptionDialogProps {
   open: boolean;
@@ -65,6 +69,8 @@ function CreateReceptionDialogContent({
   mode: 'create' | 'edit';
   initialReception: ReceptionListItem | null;
 }) {
+  // Key to reset producer autocomplete
+  const [producerAutocompleteResetKey, setProducerAutocompleteResetKey] = React.useState(0);
   const {
     data,
     template,
@@ -83,6 +89,8 @@ function CreateReceptionDialogContent({
   const [previewReception, setPreviewReception] = React.useState<PrintableReception | null>(null);
   const [savingReception, setSavingReception] = React.useState(false);
   const [previewError, setPreviewError] = React.useState<string | null>(null);
+  const [realPrintOpen, setRealPrintOpen] = React.useState(false);
+  const [realPrintReception, setRealPrintReception] = React.useState<PrintableReception | null>(null);
   const [initializingEditData, setInitializingEditData] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
@@ -538,7 +546,7 @@ function CreateReceptionDialogContent({
         data.bonus ??
         0,
     );
-    const paddyNeto = netWeight - summaryPenaltyKg + bonusKg;
+    const paddyNeto = Math.floor(netWeight - summaryPenaltyKg + bonusKg);
 
     const templateConfig: ReceptionTemplateConfig = {
       availableHumedad: Boolean(template.availableHumedad),
@@ -594,7 +602,7 @@ function CreateReceptionDialogContent({
     setPreviewOpen(false);
     setPreviewReception(null);
     setPreviewError(null);
-    onClose();
+    onClose(); // Restore manual close
   }, [onClose]);
 
   const handleClosePreview = React.useCallback(() => {
@@ -602,43 +610,115 @@ function CreateReceptionDialogContent({
     setPreviewError(null);
   }, []);
 
+  const handleCloseRealPrint = React.useCallback(() => {
+    setRealPrintOpen(false);
+    setRealPrintReception(null);
+  }, []);
+
   const handleSaveReception = React.useCallback(async () => {
+    console.log('[GUARDAR] Click en Guardar Recepción');
+    console.log('[GUARDAR] Estado data:', JSON.stringify(data));
     setSavingReception(true);
     setPreviewError(null);
 
     try {
       if (isEditMode && !initialReception) {
+        console.log('[GUARDAR] No se encontró la recepción a editar');
         setPreviewError('No se encontró la recepción a editar.');
+        setSavingReception(false);
         return;
       }
 
       const isValid = validateReception();
       if (!isValid) {
+        console.log('[GUARDAR] Validación fallida');
         setPreviewError('Faltan datos obligatorios para guardar la recepción.');
+        setSavingReception(false);
         return;
       }
 
       if (!Number(data.templateId ?? 0)) {
+        console.log('[GUARDAR] Falta plantilla, data.templateId:', data.templateId, 'Number:', Number(data.templateId ?? 0));
         setPreviewError('Debes seleccionar una plantilla antes de guardar la recepción.');
+        setSavingReception(false);
         return;
       }
 
       calculateTotals();
+      console.log('[GUARDAR] Payload:', buildCreatePayload());
       const savePayload = buildCreatePayload();
       const saveResult = isEditMode
         ? await updateReceptionAndAnalysis(Number(initialReception?.id), savePayload)
         : await createReceptionAndAnalysis(savePayload);
+      console.log('[GUARDAR] Resultado:', saveResult);
 
-      if (!saveResult.success) {
+      if (!saveResult.success || !saveResult.data) {
+        console.log('[GUARDAR] Error al guardar:', saveResult.error);
         setPreviewError(saveResult.error || 'No se pudo guardar la recepción.');
+        setSavingReception(false);
         return;
       }
 
+      // Obtener la última recepción guardada con su análisis
+      let realReception: PrintableReception | null = null;
+      const lastReceptionResult = await fetchLastReception();
+      console.log('[GUARDAR] fetchLastReception:', lastReceptionResult);
+      if (lastReceptionResult.success && lastReceptionResult.data) {
+        const lastReception = lastReceptionResult.data;
+        // Cargar el análisis asociado
+        const analysisResult = await fetchReceptionAnalysis(lastReception.id);
+        console.log('[GUARDAR] fetchReceptionAnalysis:', analysisResult);
+        realReception = mapPrintableReception(lastReception, analysisResult.data);
+      } else {
+        realReception = mapPrintableReception(saveResult.data.reception, saveResult.data.analysis);
+      }
+      // Mapea la respuesta del POST a PrintableReception
+      function mapPrintableReception(raw: any, analysis?: any): PrintableReception {
+        return {
+          id: raw.id ?? 0,
+          producer: raw.producer?.name ?? raw.producerName ?? 'Sin productor',
+          rut: raw.producer?.rut ?? raw.rut ?? '-',
+          producerAddress: raw.producer?.address ?? '',
+          producerCity: raw.producer?.city ?? '',
+          riceType: raw.riceType?.name ?? raw.riceTypeName ?? 'Sin tipo de arroz',
+          templateName: raw.template?.name ?? raw.templateName ?? 'No definida',
+          templateConfig: raw.template?.config ?? {
+            availableHumedad: raw.template?.availableHumedad ?? true,
+            availableGranosVerdes: raw.template?.availableGranosVerdes ?? true,
+            availableImpurezas: raw.template?.availableImpurezas ?? true,
+            availableVano: raw.template?.availableVano ?? false,
+            availableHualcacho: raw.template?.availableHualcacho ?? false,
+            availableGranosManchados: raw.template?.availableGranosManchados ?? true,
+            availableGranosPelados: raw.template?.availableGranosPelados ?? true,
+            availableGranosYesosos: raw.template?.availableGranosYesosos ?? false,
+          },
+          price: Number(raw.ricePrice ?? 0),
+          grossWeight: Number(raw.grossWeight ?? 0),
+          tare: Number(raw.tareWeight ?? raw.tare ?? 0),
+          netWeight: Number(raw.netWeight ?? 0),
+          guide: raw.guideNumber ?? raw.guide ?? '-',
+          licensePlate: raw.licensePlate ?? '-',
+          note: raw.notes ?? raw.note ?? '',
+          createdAt: raw.createdAt ?? '',
+          totalConDescuentos: Number(raw.totalDiscountKg ?? 0),
+          bonusKg: Number(raw.bonusKg ?? 0),
+          paddyNeto: Number(raw.finalNetWeight ?? 0),
+          status: raw.status ?? 'analyzed',
+          analysis: analysis ?? null,
+        };
+      }
+      // Limpiar formulario y abrir impresión
+      resetData();
+      setProducerAutocompleteResetKey((prev) => prev + 1);
       setPreviewOpen(false);
       setPreviewReception(null);
-      onClose();
+      setPreviewError(null);
+      setRealPrintReception(realReception);
+      setRealPrintOpen(true);
+      console.log('[GUARDAR] Diálogo de impresión abierto');
       onSuccess();
     } catch (err) {
+      console.log('[GUARDAR] Error inesperado:', err);
       setPreviewError(
         err instanceof Error
           ? err.message
@@ -653,7 +733,6 @@ function CreateReceptionDialogContent({
     data.templateId,
     initialReception,
     isEditMode,
-    onClose,
     onSuccess,
     validateReception,
   ]);
@@ -742,9 +821,24 @@ function CreateReceptionDialogContent({
     setError(null);
 
     try {
-      const isValid = validateReception();
-      if (!isValid) {
-        setError('Completa los campos obligatorios antes de previsualizar la recepción.');
+      // Validación detallada
+      const missingFields: string[] = [];
+      if (data.producerId === 0) missingFields.push('Productor');
+      if (data.riceTypeId === 0) missingFields.push('Tipo de arroz');
+      if (data.grossWeight <= 0) missingFields.push('Peso bruto');
+
+      // Validar clusters
+      Object.entries(clusters).forEach(([key, cluster]) => {
+        if (cluster.available && !validateParamCluster(cluster, data.netWeight)) {
+          missingFields.push(cluster.name || key);
+        }
+      });
+
+      if (missingFields.length > 0) {
+        setError(
+          'Completa los campos obligatorios antes de previsualizar la recepción.' +
+          '\nCampos incompletos o inválidos: ' + missingFields.join(', ')
+        );
         return;
       }
 
@@ -834,20 +928,37 @@ function CreateReceptionDialogContent({
         <PrintDialog
           open={previewOpen}
           onClose={handleClosePreview}
-          title={`${isEditMode ? 'Previsualización Edición' : 'Previsualización'} Recepción #${previewReception.guide}`}
-          fileName={`Previsualizacion-Recepcion-${previewReception.guide}`}
-          showPrintButton
+          title={`Previsualización Recepción`}
+          fileName={`Previsualizacion-Recepcion`}
           disablePrint={savingReception}
+          size="custom"
+          maxWidth="96vw"
+          fullWidth
+          scroll="body"
+          zIndex={90}
+          contentStyle={{ maxHeight: '95vh' }}
           extraActions={
             <Button
               variant="primary"
-              onClick={handleSaveReception}
+              onClick={e => { console.log('[GUARDAR] Click botón Guardar'); handleSaveReception(); }}
               loading={savingReception}
               disabled={savingReception}
             >
               {isEditMode ? 'Guardar Cambios' : 'Guardar Recepción'}
             </Button>
           }
+        >
+          <ReceptionToPrint reception={previewReception} />
+        </PrintDialog>
+      )}
+
+      {realPrintReception && (
+        <PrintDialog
+          open={realPrintOpen}
+          onClose={handleCloseRealPrint}
+          title={`Recepción #${realPrintReception.id || realPrintReception.guide}`}
+          fileName={`Recepcion-${realPrintReception.guide}`}
+          disablePrint={savingReception}
           size="custom"
           maxWidth="96vw"
           fullWidth
@@ -855,12 +966,18 @@ function CreateReceptionDialogContent({
           zIndex={90}
           contentStyle={{ maxHeight: '95vh' }}
         >
-          <div className="space-y-3">
-            {previewError && <Alert variant="error">{previewError}</Alert>}
-            <ReceptionToPrint reception={previewReception} />
-          </div>
+          <ReceptionToPrint reception={realPrintReception} />
         </PrintDialog>
       )}
+          {/* Sub-dialog for loading */}
+          {savingReception && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/30">
+              <div className="bg-white rounded-lg shadow-xl p-8 flex flex-col items-center">
+                <DotProgress totalSteps={5} size={18} gap={10} />
+                <span className="mt-4 text-lg font-semibold text-gray-700">Guardando recepción...</span>
+              </div>
+            </div>
+          )}
     </div>
   );
 }

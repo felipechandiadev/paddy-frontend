@@ -143,6 +143,7 @@ export const authOptions: NextAuthOptions = {
               email?: string;
               name?: string;
               role?: string;
+              permissions?: string[];
             };
           };
           const accessToken = data?.data?.access_token;
@@ -161,6 +162,7 @@ export const authOptions: NextAuthOptions = {
             email,
             role,
             accessToken,
+            permissions: data.data?.permissions ?? [],
           };
         } catch (error) {
           console.error("NextAuth login error:", error);
@@ -178,6 +180,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.role = user.role;
         token.accessToken = user.accessToken;
+        token.permissions = user.permissions ?? [];
       }
       return token;
     },
@@ -189,6 +192,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = (token.email as string | undefined) ?? session.user.email;
         session.user.role = token.role as string;
         session.user.accessToken = token.accessToken as string;
+        session.user.permissions = (token.permissions as string[] | undefined) ?? [];
 
         // Refresh mutable profile fields from backend to avoid stale UI after user edits.
         try {
@@ -215,6 +219,9 @@ export const authOptions: NextAuthOptions = {
             session.user.name = String(meData.name ?? session.user.name ?? '');
             session.user.email = String(meData.email ?? session.user.email ?? '');
             session.user.role = String(meData.role ?? session.user.role ?? '');
+            if (Array.isArray(meData.permissions)) {
+              session.user.permissions = meData.permissions as string[];
+            }
           }
         } catch (error) {
           console.warn('Unable to refresh auth profile from backend /auth/me', error);

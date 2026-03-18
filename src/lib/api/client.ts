@@ -1,8 +1,29 @@
 /**
  * API Client centralizado para comunicación con el backend NestJS
+ * Propaga correlation-id y request-id en todas las peticiones
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+// Generar correlation ID único por sesión
+function getOrCreateCorrelationId(): string {
+  if (typeof window === 'undefined') return '';
+  
+  const key = '__paddy_correlation_id__';
+  let correlationId = localStorage.getItem(key);
+  
+  if (!correlationId) {
+    // Generar UUID v4 simple sin dependencia externa
+    correlationId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    localStorage.setItem(key, correlationId);
+  }
+  
+  return correlationId;
+}
 
 interface RequestOptions extends RequestInit {
   token?: string;
@@ -29,6 +50,9 @@ class ApiClient {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
+
+    // Agregar correlation ID (propagado del frontend)
+    headers['x-correlation-id'] = getOrCreateCorrelationId();
 
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...fetchOptions,

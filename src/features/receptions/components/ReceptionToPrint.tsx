@@ -62,7 +62,9 @@ function formatKg(value?: number) {
   if (value === undefined || value === null) {
     return '-';
   }
-  return `${formatDecimalSmart(value)} kg`;
+  // Custom rounding: <0.5 round down, >=0.5 round up
+  const rounded = Math.floor(value) + (value - Math.floor(value) >= 0.5 ? 1 : 0);
+  return `${rounded.toLocaleString('es-CL')} kg`;
 }
 
 function formatRange(value?: number) {
@@ -302,8 +304,8 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
   const bonusKg = reception.bonusKg || 0;
   const paddyNeto =
     reception.paddyNeto > 0
-      ? reception.paddyNeto
-      : roundTo2(reception.netWeight - totalDiscountKg + bonusKg);
+      ? Math.floor(reception.paddyNeto)
+      : Math.floor(reception.netWeight - totalDiscountKg + bonusKg);
 
   const producerAddress = [
     reception.producerAddress,
@@ -315,7 +317,9 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
   const observationText =
     reception.note || analysis?.notes || 'Sin observaciones registradas.';
 
-  const receptionNumber = reception.id > 0 ? reception.id : reception.guide;
+  // En modo preview, no mostrar número/guía
+  const isPreview = reception.templateName === 'Previsualización' || reception.id === 0;
+  const receptionNumber = isPreview ? '-' : (reception.id > 0 ? reception.id : reception.guide);
   const dryPercent = analysis?.dryPercent ?? reception.dryPercent;
 
   return (
@@ -332,7 +336,9 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
           <p className={styles.documentDate}>
             Fecha: {new Date().toLocaleDateString('es-CL')}
           </p>
-          <p className={styles.guideBadge}>Folio {receptionNumber}</p>
+          {!isPreview && (
+            <p className={styles.guideBadge}>Folio {receptionNumber}</p>
+          )}
         </div>
       </header>
 

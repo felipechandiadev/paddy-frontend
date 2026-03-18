@@ -60,6 +60,10 @@ export default function PaddyTopBar() {
         },
         { label: 'Proyección de Caja', url: '/paddy/reports/cash-projection' },
         { label: 'Libro de Existencias', url: '/paddy/reports/inventory-book' },
+        {
+          label: 'Evolución de Precios por Tipo de Arroz',
+          url: '/paddy/reports/rice-price',
+        },
       ],
     },
    

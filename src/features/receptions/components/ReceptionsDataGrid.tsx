@@ -550,7 +550,7 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
         onSuccess={() => {
-          setCreateDialogOpen(false);
+          // No cerrar automáticamente el diálogo al guardar
           onReceptionCreate?.();
         }}
       />

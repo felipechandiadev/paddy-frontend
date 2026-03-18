@@ -7,6 +7,7 @@ import UserCard from './UserCard';
 import CreateUserDialog from './CreateUserDialog';
 import UpdateUserDialog from './UpdateUserDialog';
 import DeleteUserDialog from './DeleteUserDialog';
+import UserPermissionsDialog from './UserPermissionsDialog';
 import { User } from '../types/users.types';
 
 interface UsersPageProps {
@@ -18,6 +19,7 @@ export default function UsersPage({ initialUsers }: UsersPageProps) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Sincronizar usuarios cuando cambien los initialUsers (búsqueda o crear/editar/eliminar)
@@ -33,6 +35,11 @@ export default function UsersPage({ initialUsers }: UsersPageProps) {
   const handleDelete = (user: User) => {
     setSelectedUser(user);
     setDeleteDialogOpen(true);
+  };
+
+  const handleManagePermissions = (user: User) => {
+    setSelectedUser(user);
+    setPermissionsDialogOpen(true);
   };
 
   return (
@@ -57,6 +64,7 @@ export default function UsersPage({ initialUsers }: UsersPageProps) {
               user={user}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onManagePermissions={handleManagePermissions}
             />
           ))
         ) : (
@@ -85,6 +93,14 @@ export default function UsersPage({ initialUsers }: UsersPageProps) {
         user={selectedUser}
         onClose={() => {
           setDeleteDialogOpen(false);
+          setSelectedUser(null);
+        }}
+      />
+      <UserPermissionsDialog
+        open={permissionsDialogOpen}
+        user={selectedUser}
+        onClose={() => {
+          setPermissionsDialogOpen(false);
           setSelectedUser(null);
         }}
       />

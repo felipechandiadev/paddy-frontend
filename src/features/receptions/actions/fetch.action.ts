@@ -1,8 +1,13 @@
 'use server';
 
+
+
+
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth.config';
 import { throwIfBackendUnavailable } from '@/lib/api/backend-connection-error';
+import { getAuditHeaders } from '@/lib/audit-headers';
 import {
   ReceptionListItem,
   CreateReceptionPayload,
@@ -17,8 +22,33 @@ const CONFIG_API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/configuration`;
 function getAuthHeaders(token: string): HeadersInit {
   return {
     'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    ...getAuditHeaders(),
   };
+}
+
+export async function fetchLastReception(): Promise<{ success: boolean; data?: Reception; error?: string }> {
+  try {
+    const session = await getServerSession(authOptions);
+    const token = (session?.user as any)?.accessToken;
+    if (!token) {
+      return { success: false, error: 'Token inválido o expirado' };
+    }
+    const response = await fetch(`${API_BASE_URL}/last`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(token),
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { success: false, error: extractErrorMessage(errorData, 'No se pudo obtener la última recepción') };
+    }
+    const reception = unwrapResponseData<Reception>(await response.json());
+    return { success: true, data: reception };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' };
+  }
 }
 
 function parseOptionalNumber(value: unknown): number | undefined {
@@ -430,13 +460,13 @@ export async function fetchReceptions(
 
         const paddyNeto =
           reception.storedFinalNetWeight ??
-          (reception.netWeight - totalDiscountKg + bonusKg);
+          Math.floor(reception.netWeight - totalDiscountKg + bonusKg);
 
         return {
           ...reception,
           totalConDescuentos: roundTo2(totalDiscountKg),
           bonusKg: roundTo2(bonusKg),
-          paddyNeto: roundTo2(paddyNeto),
+          paddyNeto: Math.floor(paddyNeto),
           analysis,
         };
       }),

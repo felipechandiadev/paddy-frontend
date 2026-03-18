@@ -674,3 +674,46 @@ export interface ProcessYieldReportResponse {
   assumptions: ReportAssumptions;
 }
 
+// ===== PRECIO POR TIPO DE ARROZ =====
+
+export interface RicePriceReportFilters {
+  fechaInicio: string;
+  fechaFin: string;
+  riceTypeId?: number;
+  groupBy?: ReportGroupBy;
+}
+
+export interface RicePriceDataPoint {
+  periodKey: string;
+  weightedAvgPrice: number | null;
+  totalKg: number;
+  receptionCount: number;
+}
+
+export interface RicePriceSeries {
+  riceTypeId: number;
+  riceTypeCode: string;
+  riceTypeName: string;
+  data: RicePriceDataPoint[];
+}
+
+export interface RicePriceReportSummary {
+  totalReceptions: number;
+  totalKg: number;
+  riceTypesCount: number;
+  periodLabels: string[];
+}
+
+export interface RicePriceReportResponse {
+  reportName: string;
+  period: {
+    fechaInicio: string;
+    fechaFin: string;
+    groupBy: ReportGroupBy;
+    riceTypeId: number | null;
+  };
+  summary: RicePriceReportSummary;
+  series: RicePriceSeries[];
+  assumptions: ReportAssumptions;
+}
+

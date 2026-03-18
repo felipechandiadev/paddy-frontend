@@ -1,4 +1,5 @@
 import { User } from '../types/users.types';
+import { UserPermissionsData } from '../types/users.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
@@ -40,5 +41,44 @@ export const usersApi = {
     }
     
     return data;
+  },
+
+  async getPermissions(userId: string, accessToken: string): Promise<UserPermissionsData> {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/permissions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch permissions: ${response.statusText}`);
+    }
+
+    const payload = await response.json();
+    // Backend responde envuelto en TransformInterceptor: { data: { effective, overrides } }
+    return payload?.data ?? payload;
+  },
+
+  async setPermissions(
+    userId: string,
+    grants: string[],
+    revokes: string[],
+    accessToken: string,
+  ): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/permissions`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ grants, revokes }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update permissions: ${response.statusText}`);
+    }
   },
 };
