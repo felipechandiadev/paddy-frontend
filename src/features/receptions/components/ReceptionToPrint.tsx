@@ -166,7 +166,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
     {
       key: 'granos-pelados',
       code: 12,
-      label: 'Granos Pelados',
+      label: 'Granos Partidos',
       templateAvailabilityField: 'availableGranosPelados',
       valueField: 'peladosValue',
       legacyValueField: 'peladosRange',
@@ -174,7 +174,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
       toleranceField: 'peladosTolerance',
       toleranceVisibleField: 'peladosTolVisible',
       isGroupField: 'peladosIsGroup',
-    },
+    }
     {
       key: 'granos-yesosos',
       code: 13,
