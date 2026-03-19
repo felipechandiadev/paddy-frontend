@@ -338,15 +338,13 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
       {
         field: 'producer',
         headerName: 'Productor',
-        minWidth: 190,
-        flex: 1,
+        width: 200,
         sortable: true,
       },
       {
         field: 'riceType',
         headerName: 'Tipo de Arroz',
-        minWidth: 170,
-        flex: 1,
+        width: 180,
         sortable: true,
       },
       {

@@ -174,7 +174,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
       toleranceField: 'peladosTolerance',
       toleranceVisibleField: 'peladosTolVisible',
       isGroupField: 'peladosIsGroup',
-    }
+    },
     {
       key: 'granos-yesosos',
       code: 13,
