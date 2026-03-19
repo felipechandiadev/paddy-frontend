@@ -29,9 +29,9 @@ interface AuditRouteProps {
 export default async function AuditRoute({ searchParams }: AuditRouteProps) {
   const session = await getSession();
 
-  // Verificar que el usuario sea admin
-  if (!session || session.user?.role !== 'ADMIN') {
-    redirect('/paddy');
+  // Verificar que el usuario esté autenticado
+  if (!session) {
+    redirect('/login');
   }
 
   const params = await searchParams;
