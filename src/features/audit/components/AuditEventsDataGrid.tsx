@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import DataGrid, { DataGridColumn } from '@/shared/components/ui/DataGrid';
 import { AuditEvent } from '../types/audit.types';
+import { getEventDescription } from '../constants/event-descriptions';
 
 interface AuditEventsDataGridProps {
   events: AuditEvent[];
@@ -63,23 +64,17 @@ export default function AuditEventsDataGrid({
         },
       },
       {
-        field: 'eventCode',
+        field: 'description',
         headerName: 'Evento',
         flex: 1,
-        minWidth: 220,
-        sortable: true,
-      },
-      {
-        field: 'category',
-        headerName: 'Categoría',
-        width: 140,
-        sortable: true,
-      },
-      {
-        field: 'action',
-        headerName: 'Acción',
-        width: 140,
-        sortable: true,
+        minWidth: 280,
+        sortable: false,
+        valueGetter: (params) => getEventDescription(params.row.eventCode),
+        renderCell: ({ row }) => (
+          <span className="text-neutral-900 font-medium">
+            {getEventDescription(row.eventCode)}
+          </span>
+        ),
       },
       {
         field: 'method',
