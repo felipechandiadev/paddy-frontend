@@ -94,7 +94,7 @@ function CreateReceptionDialogContent({
   const [realPrintReception, setRealPrintReception] = React.useState<PrintableReception | null>(null);
   const [initializingEditData, setInitializingEditData] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement | null>(null);
-  const producerAutocompleteRef = React.useRef<HTMLInputElement | null>(null);
+  const producerAutocompleteRef = React.useRef<HTMLInputElement>(null as any);
 
   React.useEffect(() => {
     if (!isEditMode || !initialReception || !editReceptionId) {
