@@ -48,14 +48,23 @@ export default function AuditPage({
       {/* Filtros */}
       <AuditFilters />
 
-      {/* DataGrid */}
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
-        <AuditEventsDataGrid
-          events={initialEvents}
-          onDetailClick={handleEventDetail}
-          onCorrelationClick={handleCorrelationClick}
-        />
-      </div>
+      {/* DataGrid o mensaje vacío */}
+      {initialEvents.length === 0 ? (
+        <div className="bg-white rounded-lg border border-neutral-200 p-12 text-center">
+          <p className="text-neutral-600 mb-4">No se encontraron eventos que coincidan con los filtros aplicados.</p>
+          <p className="text-sm text-neutral-500">
+            Intenta ajustar los filtros o <a href="/paddy/audit" className="text-blue-600 hover:underline">borrar los filtros</a> para ver todos los eventos.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+          <AuditEventsDataGrid
+            events={initialEvents}
+            onDetailClick={handleEventDetail}
+            onCorrelationClick={handleCorrelationClick}
+          />
+        </div>
+      )}
 
       {/* Información de paginación */}
       {totalPages > 1 && (
