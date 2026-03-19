@@ -35,7 +35,7 @@ export default function AuditPage({
   };
 
   return (
-    <div className="w-full">
+    <div className="px-6 py-8 w-full">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primary mb-2">Auditoría del Sistema</h1>

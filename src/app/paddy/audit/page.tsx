@@ -49,14 +49,12 @@ export default async function AuditRoute({ searchParams }: AuditRouteProps) {
     const response = await fetchAuditEvents(filters);
 
     return (
-      <div className="px-6 py-8">
-        <AuditPage
-          initialEvents={response.data?.events || []}
-          totalEvents={response.data?.total || 0}
-          totalPages={response.data?.totalPages || 1}
-          currentPage={response.data?.page || 1}
-        />
-      </div>
+      <AuditPage
+        initialEvents={response.data?.events || []}
+        totalEvents={response.data?.total || 0}
+        totalPages={response.data?.totalPages || 1}
+        currentPage={response.data?.page || 1}
+      />
     );
   } catch (error) {
     console.error('Error loading audit events:', error);
