@@ -40,6 +40,9 @@ export default function AuditEventsDataGrid({
   onCorrelationClick,
   error,
 }: AuditEventsDataGridProps) {
+  // Ensure events is always an array
+  const safeEvents = Array.isArray(events) ? events : [];
+
   const columns: DataGridColumn[] = useMemo(
     () => [
       {
@@ -212,8 +215,8 @@ export default function AuditEventsDataGrid({
   return (
     <DataGrid
       columns={columns}
-      rows={events}
-      totalRows={events.length}
+      rows={safeEvents}
+      totalRows={safeEvents.length}
       title="Eventos de Auditoría"
       height="85vh"
       showSearch={true}

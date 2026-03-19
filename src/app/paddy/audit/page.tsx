@@ -60,10 +60,10 @@ export default async function AuditRoute({ searchParams }: AuditRouteProps) {
     return (
       <div className="px-6 py-8">
         <AuditPage
-          initialEvents={response.data.events}
-          totalEvents={response.data.total}
-          totalPages={response.data.totalPages}
-          currentPage={response.data.page}
+          initialEvents={response.data?.events || []}
+          totalEvents={response.data?.total || 0}
+          totalPages={response.data?.totalPages || 1}
+          currentPage={response.data?.page || 1}
         />
       </div>
     );
