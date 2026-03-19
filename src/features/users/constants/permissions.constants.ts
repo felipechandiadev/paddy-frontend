@@ -69,12 +69,6 @@ export const PERMISSION_CATALOG: PermissionMeta[] = [
   { key: 'settlements.complete',     label: 'Liquidar (completar)',         group: 'Liquidaciones' },
   { key: 'settlements.cancel',       label: 'Cancelar liquidaciones',      group: 'Liquidaciones' },
 
-  // Servicios de Liquidación
-  { key: 'settlement_services.view',   label: 'Ver servicios de liquidación',    group: 'Liquidaciones' },
-  { key: 'settlement_services.create', label: 'Crear servicios de liquidación',  group: 'Liquidaciones' },
-  { key: 'settlement_services.update', label: 'Editar servicios de liquidación', group: 'Liquidaciones' },
-  { key: 'settlement_services.delete', label: 'Eliminar servicios de liquidación', group: 'Liquidaciones' },
-
   // Analíticas
   { key: 'analytics.view',           label: 'Ver reportes y analíticas',   group: 'Reportes' },
 ];

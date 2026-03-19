@@ -672,16 +672,6 @@ export default function NewAdvanceDialog({
                     />
 
                     <TextField
-                      label="Fecha emision cheque"
-                      type="date"
-                      value={form.checkIssueDate}
-                      onChange={(event) =>
-                        handleFieldChange('checkIssueDate', event.target.value)
-                      }
-                      disabled={isSaving}
-                    />
-
-                    <TextField
                       label="Fecha cobro cheque"
                       type="date"
                       value={form.checkDueDate}
@@ -814,12 +804,6 @@ export default function NewAdvanceDialog({
                           <span className="text-neutral-500">Banco emisor</span>
                           <span className="text-right font-medium text-neutral-900">
                             {form.checkBankName || '-'}
-                          </span>
-                        </div>
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="text-neutral-500">Fecha emision</span>
-                          <span className="text-right font-medium text-neutral-900">
-                            {formatDateLabel(form.checkIssueDate)}
                           </span>
                         </div>
                         <div className="flex items-start justify-between gap-3">

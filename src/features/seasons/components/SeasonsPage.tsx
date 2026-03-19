@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import SeasonCard from './SeasonCard';
 import SeasonSearchBar from './SeasonSearchBar';
@@ -14,6 +15,7 @@ interface SeasonsPageProps {
 }
 
 export default function SeasonsPage({ initialSeasons }: SeasonsPageProps) {
+  const { isAdmin } = usePermissions();
   const [seasons, setSeasons] = useState<Season[]>(initialSeasons);
 
   // Dialog states
@@ -51,6 +53,7 @@ export default function SeasonsPage({ initialSeasons }: SeasonsPageProps) {
           variant="ghost"
           onClick={() => setCreateDialogOpen(true)}
           title="Crear nueva temporada"
+          disabled={!isAdmin}
         />
         <SeasonSearchBar />
       </div>

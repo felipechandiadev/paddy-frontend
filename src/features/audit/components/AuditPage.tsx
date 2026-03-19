@@ -36,29 +36,14 @@ export default function AuditPage({
 
   return (
     <div className="px-6 py-8 w-full">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary mb-2">Auditoría del Sistema</h1>
-        <p className="text-neutral-600">
-          Log de eventos y acciones del sistema. Total de eventos: {totalEvents}
-        </p>
-      </div>
-
       {/* DataGrid */}
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden mb-4">
+      <div className="mb-4">
         <AuditEventsDataGrid
           events={initialEvents}
           onDetailClick={handleEventDetail}
           onCorrelationClick={handleCorrelationClick}
         />
       </div>
-
-      {/* Información de paginación */}
-      {totalPages > 1 && (
-        <div className="text-center text-sm text-neutral-600">
-          Página {currentPage} de {totalPages}
-        </div>
-      )}
 
       {/* Detail Dialog */}
       {selectedEvent && (

@@ -857,9 +857,9 @@ function CreateReceptionDialogContent({
       if (data.riceTypeId === 0) missingFields.push('Tipo de arroz');
       if (data.grossWeight <= 0) missingFields.push('Peso bruto');
 
-      // Validar clusters
+      // Validar clusters (solo tipo 'param', no Summary/Bonus/Dry que son calculados)
       Object.entries(clusters).forEach(([key, cluster]) => {
-        if (cluster.available && !validateParamCluster(cluster, data.netWeight)) {
+        if (cluster.type === 'param' && cluster.available && !validateParamCluster(cluster, data.netWeight)) {
           missingFields.push(cluster.name || key);
         }
       });

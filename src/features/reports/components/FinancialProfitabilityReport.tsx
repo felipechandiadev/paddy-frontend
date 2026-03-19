@@ -8,7 +8,7 @@ import AutoComplete, {
   Option as AutoCompleteOption,
 } from '@/shared/components/ui/AutoComplete/AutoComplete';
 import Select from '@/shared/components/ui/Select/Select';
-import { Button } from '@/shared/components/ui/Button/Button';
+import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import { fetchFinancialProfitabilityReport } from '../actions/reports.action';
 import {
@@ -306,7 +306,7 @@ const FinancialProfitabilityReport: React.FC<FinancialProfitabilityReportProps> 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5 print:hidden">
+      <div className="grid grid-cols-1 gap-3 items-end md:grid-cols-2 xl:grid-cols-2 print:hidden">
         <Select
           label="Temporada"
           options={seasonOptions}
@@ -356,22 +356,23 @@ const FinancialProfitabilityReport: React.FC<FinancialProfitabilityReportProps> 
             }))
           }
         />
-        <div className="flex items-end">
-          <Button
-            variant="outlined"
-            className="w-full"
-            onClick={handlePrint}
-            disabled={!report || loading}
-          >
-            Imprimir
-          </Button>
-        </div>
       </div>
 
       <div className="flex justify-end gap-2 print:hidden">
-        <Button onClick={() => void runReport()} loading={loading}>
-          Generar Reporte
-        </Button>
+        <IconButton
+          icon="print"
+          variant="basicSecondary"
+          disabled={!report || loading}
+          onClick={handlePrint}
+          ariaLabel="Imprimir"
+        />
+        <IconButton
+          icon="bar_chart"
+          variant="ghost"
+          isLoading={loading}
+          onClick={() => void runReport()}
+          ariaLabel="Generar Reporte"
+        />
       </div>
 
       {error ? <Alert variant="error">{error}</Alert> : null}

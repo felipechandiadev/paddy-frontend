@@ -110,7 +110,7 @@ export function mapSeasonOptions(seasons: AdvanceSeasonOption[]): Option[] {
     .sort((a, b) => b.year - a.year)
     .map((season) => ({
       id: season.id,
-      label: `${season.code} - ${season.name}`,
+      label: season.name,
     }));
 }
 

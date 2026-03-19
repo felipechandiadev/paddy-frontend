@@ -8,7 +8,7 @@ import AutoComplete, {
   Option as AutoCompleteOption,
 } from '@/shared/components/ui/AutoComplete/AutoComplete';
 import Select from '@/shared/components/ui/Select/Select';
-import { Button } from '@/shared/components/ui/Button/Button';
+import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import { fetchFinancialServicesInterestReport } from '../actions/reports.action';
 import {
@@ -676,7 +676,7 @@ const InterestRevenueReport: React.FC<InterestRevenueReportProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-7 print:hidden">
+      <div className="grid grid-cols-1 gap-3 items-end md:grid-cols-2 xl:grid-cols-3 print:hidden">
         <TextField
           label="Fecha inicio"
           type="date"
@@ -767,12 +767,20 @@ const InterestRevenueReport: React.FC<InterestRevenueReportProps> = ({
       </div>
 
       <div className="flex justify-end gap-2 print:hidden">
-        <Button variant="outlined" onClick={handlePrint} disabled={!report || loading}>
-          Imprimir
-        </Button>
-        <Button onClick={() => void runReport()} loading={loading}>
-          Generar Reporte
-        </Button>
+        <IconButton
+          icon="print"
+          variant="basicSecondary"
+          disabled={!report || loading}
+          onClick={handlePrint}
+          ariaLabel="Imprimir"
+        />
+        <IconButton
+          icon="bar_chart"
+          variant="ghost"
+          isLoading={loading}
+          onClick={() => void runReport()}
+          ariaLabel="Generar Reporte"
+        />
       </div>
 
       {error ? <Alert variant="error">{error}</Alert> : null}

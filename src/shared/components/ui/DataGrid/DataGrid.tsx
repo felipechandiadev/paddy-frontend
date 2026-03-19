@@ -52,6 +52,7 @@ export interface DataGridProps {
   createForm?: React.ReactNode;
   createFormTitle?: string;
   onAddClick?: () => void; // Callback para el botón + (abre diálogo externo)
+  addDisabled?: boolean; // Deshabilita el botón + sin ocultarlo
   ["data-test-id"]?: string;
   excelUrl?: string; // Absolute URL for Excel export endpoint
   excelFields?: string;
@@ -88,6 +89,7 @@ const DataGrid: React.FC<DataGridProps> = ({
   createForm,
   createFormTitle,
   onAddClick,
+  addDisabled,
   ["data-test-id"]: dataTestId,
   excelUrl,
   excelFields,
@@ -173,6 +175,7 @@ const DataGrid: React.FC<DataGridProps> = ({
         createForm={createForm}
         createFormTitle={createFormTitle}
         onAddClick={onAddClick}
+        addDisabled={addDisabled}
         screenWidth={screenWidth}
         onExportExcel={onExportExcel}
         headerActions={headerActions}

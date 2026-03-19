@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Badge from '@/shared/components/ui/Badge/Badge';
 import { RiceType } from '../types/rice-types.types';
@@ -16,6 +17,7 @@ export default function RiceTypeCard({
   onEdit,
   onDelete,
 }: RiceTypeCardProps) {
+  const { isAdmin } = usePermissions();
   return (
     <article className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden p-2 flex flex-col justify-between">
       <div className="flex-grow">
@@ -49,6 +51,7 @@ export default function RiceTypeCard({
           size="sm"
           onClick={() => onEdit(riceType)}
           title="Editar tipo de arroz"
+          disabled={!isAdmin}
         />
         <IconButton
           icon="delete"
@@ -56,6 +59,7 @@ export default function RiceTypeCard({
           size="sm"
           onClick={() => onDelete(riceType)}
           title="Eliminar tipo de arroz"
+          disabled={!isAdmin}
         />
       </div>
     </article>

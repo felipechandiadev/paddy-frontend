@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useCan } from '@/shared/hooks/useCan';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
@@ -130,6 +131,7 @@ const SettlementsDataGrid: React.FC<SettlementsDataGridProps> = ({
   onSettlementDelete,
   ...props
 }) => {
+  const { can } = useCan();
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedSettlementForEdit, setSelectedSettlementForEdit] =
@@ -451,8 +453,8 @@ const SettlementsDataGrid: React.FC<SettlementsDataGridProps> = ({
       renderCell: ({ row }) => {
         const settlement = row as Settlement;
         const isAnnulled = Boolean(settlement.deletedAt);
-        const canEdit = settlement.status === 'draft' && !isAnnulled;
-        const canDelete = !isAnnulled;
+        const canEdit = settlement.status === 'draft' && !isAnnulled && can('settlements.save');
+        const canDelete = !isAnnulled && can('settlements.cancel');
         const canPrint = !isAnnulled;
 
         return (
@@ -516,6 +518,7 @@ const SettlementsDataGrid: React.FC<SettlementsDataGridProps> = ({
         showBorder={false}
         pinActionsColumn={true}
         onAddClick={() => setIsNewDialogOpen(true)}
+        addDisabled={!can('settlements.create')}
         {...props}
       />
 
@@ -621,7 +624,8 @@ const SettlementsDataGrid: React.FC<SettlementsDataGridProps> = ({
           scroll="body"
           zIndex={90}
           contentStyle={{ maxHeight: '95vh' }}
-          pageOrientation="landscape"
+          pageSize="Letter"
+          pageOrientation="portrait"
         >
           <SettlementToPrint settlement={selectedSettlementForPrint} />
         </PrintDialog>

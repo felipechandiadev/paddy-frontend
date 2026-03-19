@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import AuthProvider from "@/providers/AuthProvider";
 import "./globals.css";
 
@@ -58,6 +59,12 @@ export default function RootLayout({
   return (
     <html lang="es-CL">
       <head>
+        {/* Polyfills DEBEN cargar primero, antes de cualquier otra cosa */}
+        <Script
+          src="/polyfills.js"
+          strategy="beforeInteractive"
+          async={false}
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"

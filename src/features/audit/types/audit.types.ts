@@ -1,6 +1,7 @@
 export interface AuditEvent {
   id: number;
   eventCode: string;
+  description?: string;
   category: string;
   action: string;
   status: 'SUCCESS' | 'FAIL' | 'DENIED';

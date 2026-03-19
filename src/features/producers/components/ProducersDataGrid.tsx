@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useCan } from '@/shared/hooks/useCan';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import { Producer } from '../types/producers.types';
 
@@ -19,6 +20,7 @@ export default function ProducersDataGrid({
   onView,
   onDelete,
 }: ProducersDataGridProps) {
+  const { can } = useCan();
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
@@ -78,6 +80,7 @@ export default function ProducersDataGrid({
                       onClick={() => onDelete(producer)}
                       ariaLabel="Eliminar"
                       title="Eliminar"
+                      disabled={!can('producers.delete')}
                     />
                   </div>
                 </td>
@@ -92,7 +95,8 @@ export default function ProducersDataGrid({
           <p className="text-gray-500 mb-4">No hay productores registrados</p>
           <button
             onClick={onAdd}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm font-medium"
+            disabled={!can('producers.create')}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

@@ -487,9 +487,9 @@ export function useReceptionData(): ReceptionContextType {
       isValid = false;
     }
 
-    // Validar clusters
+    // Validar clusters (solo tipo 'param', no Summary/Bonus/Dry que son calculados)
     Object.values(clusters).forEach((cluster) => {
-      if (cluster.available) {
+      if (cluster.type === 'param' && cluster.available) {
         if (!validateParamCluster(cluster, data.netWeight)) {
           isValid = false;
         }

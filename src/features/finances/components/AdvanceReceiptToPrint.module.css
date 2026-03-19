@@ -1,6 +1,6 @@
 .sheet {
-  width: 210mm;
-  min-height: 297mm;
+  width: 215.9mm;
+  min-height: 279.4mm;
   margin: 0 auto;
   padding: 14mm;
   background: #ffffff;
@@ -164,7 +164,7 @@
 }
 
 .checkContainer {
-  min-height: 175px;
+  min-height: 230px;
   border: 2px dashed #9ca3af;
   border-radius: 12px;
   background: #ffffff;
@@ -189,7 +189,7 @@
 
 .signatureBox {
   position: relative;
-  min-height: 132px;
+  min-height: 90px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -225,11 +225,11 @@
 
 .signatureStamp {
   position: absolute;
-  right: -4px;
-  top: 8px;
+  left: 50%;
+  top: -12px;
   width: 118px;
   height: auto;
-  transform: rotate(-16deg);
+  transform: translateX(-50%) rotate(-16deg);
   opacity: 0.9;
   z-index: 1;
   pointer-events: none;

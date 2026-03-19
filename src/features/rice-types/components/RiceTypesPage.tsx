@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import { RiceType } from '../types/rice-types.types';
 import RiceTypeCard from './RiceTypeCard';
@@ -18,6 +19,7 @@ export default function RiceTypesPage({
   initialData,
   searchParams = {},
 }: RiceTypesPageProps) {
+  const { isAdmin } = usePermissions();
   const [riceTypes, setRiceTypes] = useState(initialData);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -53,6 +55,7 @@ export default function RiceTypesPage({
           variant="ghost"
           onClick={() => setCreateDialogOpen(true)}
           title="Agregar nuevo tipo de arroz"
+          disabled={!isAdmin}
         />
         <div className="ml-auto w-full max-w-md">
           <RiceTypesSearchBar />

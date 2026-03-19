@@ -60,19 +60,26 @@ export default function AuditEventsDataGrid({
         sortable: true,
         valueGetter: (params) => {
           const date = new Date(params.row.createdAt);
-          return date.toLocaleString('es-CL');
+          return date.toLocaleString('es-CL', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+          });
         },
       },
       {
         field: 'description',
-        headerName: 'Evento',
-        flex: 1,
-        minWidth: 280,
+        headerName: 'Descripción',
+        width: 320,
         sortable: false,
-        valueGetter: (params) => getEventDescription(params.row.eventCode),
-        renderCell: ({ row }) => (
+        valueGetter: (params) => params.row.description || getEventDescription(params.row.eventCode),
+        renderCell: ({ value }) => (
           <span className="text-neutral-900 font-medium">
-            {getEventDescription(row.eventCode)}
+            {value || '-'}
           </span>
         ),
       },
@@ -144,42 +151,15 @@ export default function AuditEventsDataGrid({
         valueGetter: (params) => params.row.actorEmail || 'Sistema',
       },
       {
-        field: 'ip',
-        headerName: 'IP',
-        width: 140,
-        sortable: true,
-        valueGetter: (params) => params.row.ip || 'N/A',
-      },
-      {
-        field: 'correlationId',
-        headerName: 'Correlation ID',
-        width: 220,
-        sortable: false,
-        renderCell: ({ value }) => (
-          <span
-            style={{
-              color: '#0ea5e9',
-              cursor: 'pointer',
-              fontSize: '12px',
-            }}
-            title="Correlation ID del request"
-          >
-            {value ? value.substring(0, 12) + '...' : 'N/A'}
-          </span>
-        ),
-      },
-      {
         field: 'route',
         headerName: 'Ruta',
-        flex: 1,
-        minWidth: 240,
+        width: 280,
         sortable: true,
       },
       {
         field: 'errorMessage',
         headerName: 'Error',
-        flex: 1,
-        minWidth: 300,
+        width: 320,
         sortable: false,
         renderCell: ({ value }) => (
           <span style={{ fontSize: '12px', color: value ? '#dc2626' : '#9ca3af' }}>

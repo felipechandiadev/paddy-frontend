@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { signOut } from 'next-auth/react';
 import { useReactToPrint } from 'react-to-print';
 import Select from '@/shared/components/ui/Select/Select';
-import { Button } from '@/shared/components/ui/Button/Button';
+import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import { fetchCashProjectionReport } from '../actions/reports.action';
 import {
@@ -265,34 +265,35 @@ const CashProjectionReport: React.FC<CashProjectionReportProps> = ({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-end gap-3 print:hidden">
-        <div className="min-w-[220px]">
-          <Select
-            label="Temporada"
-            options={[{ id: '', label: 'Temporada activa' }, ...seasonOptions]}
-            value={filters.seasonId != null ? String(filters.seasonId) : ''}
-            onChange={(val) =>
-              setFilters((prev) => ({
-                ...prev,
-                seasonId: val && val !== '' ? Number(val) : undefined,
-              }))
-            }
-          />
-        </div>
+      <div className="grid grid-cols-1 gap-3 items-end md:grid-cols-2 xl:grid-cols-2 print:hidden">
+        <Select
+          label="Temporada"
+          options={[{ id: '', label: 'Temporada activa' }, ...seasonOptions]}
+          value={filters.seasonId != null ? String(filters.seasonId) : ''}
+          onChange={(val) =>
+            setFilters((prev) => ({
+              ...prev,
+              seasonId: val && val !== '' ? Number(val) : undefined,
+            }))
+          }
+        />
+      </div>
 
-        <Button
-          variant="primary"
+      <div className="flex justify-end gap-2 print:hidden">
+        <IconButton
+          icon="print"
+          variant="basicSecondary"
+          disabled={!report || loading}
+          onClick={() => handlePrint()}
+          ariaLabel="Imprimir"
+        />
+        <IconButton
+          icon="bar_chart"
+          variant="ghost"
+          isLoading={loading}
           onClick={() => void runReport()}
-          disabled={loading}
-        >
-          {loading ? 'Calculando…' : 'Actualizar'}
-        </Button>
-
-        {report && (
-          <Button variant="secondary" onClick={() => handlePrint()}>
-            Imprimir / PDF
-          </Button>
-        )}
+          ariaLabel="Generar Reporte"
+        />
       </div>
 
       {/* Error */}

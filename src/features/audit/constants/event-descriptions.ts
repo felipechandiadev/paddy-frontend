@@ -3,99 +3,86 @@
  * Mapea eventCode a una descripción amigable en español
  */
 export const EVENT_DESCRIPTIONS: Record<string, string> = {
-  // AUTH Events
+  // AUTH
   'AUTH.LOGIN.ATTEMPT': 'Intento de inicio de sesión',
-  'AUTH.LOGIN.SUCCESS': 'Inicio de sesión exitoso',
-  'AUTH.LOGIN.FAILED': 'Error en inicio de sesión',
-  'AUTH.LOGOUT': 'Cierre de sesión',
-  'AUTH.TOKEN.REFRESH': 'Renovación de sesión',
-  'AUTH.TOKEN.EXPIRED': 'Sesión expirada',
-  'AUTH.PASSWORD.CHANGE': 'Cambio de contraseña',
-  'AUTH.PASSWORD.RESET': 'Reinicio de contraseña',
+  'AUTH.REGISTER.ATTEMPT': 'Registro de nuevo usuario',
+  'AUTH.REFRESH.ATTEMPT': 'Renovación de sesión',
+  'AUTH.PASSWORD_CHANGE.ATTEMPT': 'Cambio de contraseña',
 
-  // USERS Events
+  // USERS
+  'USERS.LIST.READ': 'Lista de usuarios consultada',
+  'USERS.ITEM.READ': 'Detalle de usuario consultado',
   'USERS.CREATE': 'Nuevo usuario creado',
   'USERS.UPDATE': 'Usuario actualizado',
   'USERS.DELETE': 'Usuario eliminado',
-  'USERS.ACTIVATE': 'Usuario activado',
-  'USERS.DEACTIVATE': 'Usuario desactivado',
-  'USERS.ROLE.CHANGE': 'Cambio de rol de usuario',
+  'USERS.TOGGLE_ACTIVE': 'Estado activo de usuario cambiado',
+  'USERS.PERMISSIONS.READ': 'Permisos de usuario consultados',
   'USERS.PERMISSIONS.UPDATE': 'Permisos de usuario actualizados',
 
-  // PRODUCERS Events
+  // PRODUCERS
+  'PRODUCERS.LIST.READ': 'Lista de productores consultada',
+  'PRODUCERS.ITEM.READ': 'Detalle de productor consultado',
   'PRODUCERS.CREATE': 'Nuevo productor registrado',
   'PRODUCERS.UPDATE': 'Información de productor actualizada',
   'PRODUCERS.DELETE': 'Productor eliminado',
-  'PRODUCERS.VIEW': 'Información de productor consultada',
+  'PRODUCERS.BANK_ACCOUNT.ADD': 'Cuenta bancaria agregada',
+  'PRODUCERS.BANK_ACCOUNT.REMOVE': 'Cuenta bancaria eliminada',
 
-  // RECEPTIONS Events
-  'RECEPTIONS.CREATE': 'Nueva recepción de arroz creada',
-  'RECEPTIONS.UPDATE': 'Recepción actualizada',
-  'RECEPTIONS.ANALYZE': 'Análisis de recepción realizado',
-  'RECEPTIONS.SETTLE': 'Recepción liquidada',
-  'RECEPTIONS.CANCEL': 'Recepción cancelada',
-  'RECEPTIONS.STATUS.CHANGE': 'Estado de recepción cambiado',
+  // OPERATIONS — RECEPTIONS
+  'OPS.RECEPTIONS.LIST.READ': 'Lista de recepciones consultada',
+  'OPS.RECEPTIONS.EXPORT': 'Recepciones exportadas',
+  'OPS.RECEPTIONS.CREATE': 'Nueva recepción de arroz creada',
+  'OPS.RECEPTIONS.UPDATE': 'Recepción actualizada',
+  'OPS.RECEPTIONS.DELETE': 'Recepción eliminada',
+  'OPS.RECEPTIONS.RICE_PRICE.UPDATE': 'Precio de arroz de recepción actualizado',
+  'OPS.RECEPTIONS.CALCULATE_DISCOUNTS': 'Descuentos de recepción calculados',
+  'OPS.RECEPTIONS.SETTLE': 'Recepción liquidada',
 
-  // ANALYSIS Events
-  'ANALYSIS.CREATE': 'Nuevo análisis de laboratorio creado',
-  'ANALYSIS.UPDATE': 'Análisis actualizado',
-  'ANALYSIS.COMPLETE': 'Análisis completado',
-  'ANALYSIS.APPROVE': 'Análisis aprobado',
-  'ANALYSIS.REJECT': 'Análisis rechazado',
+  // OPERATIONS — ANALYSIS
+  'OPS.ANALYSIS.READ': 'Análisis de recepción consultado',
+  'OPS.ANALYSIS.CREATE': 'Análisis de laboratorio creado',
+  'OPS.ANALYSIS.UPDATE': 'Análisis de laboratorio actualizado',
+  'OPS.ANALYSIS.DELETE': 'Análisis de laboratorio eliminado',
+  'OPS.ANALYSIS.DRY_PERCENT.UPDATE': 'Porcentaje de secado actualizado',
 
-  // ADVANCES Events
-  'ADVANCES.CREATE': 'Nuevo anticipo creado',
-  'ADVANCES.UPDATE': 'Anticipo actualizado',
-  'ADVANCES.PAYMENT': 'Pago de anticipo procesado',
-  'ADVANCES.CANCEL': 'Anticipo cancelado',
-  'ADVANCES.STATUS.CHANGE': 'Estado de anticipo cambiado',
-  'ADVANCES.INTEREST.UPDATE': 'Interés de anticipo actualizado',
+  // FINANCES — ADVANCES
+  'FINANCE.ADVANCES.LIST.READ': 'Lista de anticipos consultada',
+  'FINANCE.ADVANCES.EXPORT': 'Anticipos exportados',
+  'FINANCE.ADVANCES.CREATE': 'Nuevo anticipo creado',
+  'FINANCE.ADVANCES.UPDATE': 'Anticipo actualizado',
+  'FINANCE.ADVANCES.DELETE': 'Anticipo eliminado',
+  'FINANCE.ADVANCES.INTEREST.CALCULATE': 'Interés de anticipo calculado',
 
-  // SETTLEMENTS Events
-  'SETTLEMENTS.CREATE': 'Nueva liquidación creada',
-  'SETTLEMENTS.CALCULATE': 'Cálculos de liquidación realizados',
-  'SETTLEMENTS.APPROVE': 'Liquidación aprobada',
-  'SETTLEMENTS.COMPLETE': 'Liquidación completada',
-  'SETTLEMENTS.CANCEL': 'Liquidación cancelada',
-  'SETTLEMENTS.PRINT': 'Liquidación impresa',
+  // FINANCES — TRANSACTIONS
+  'FINANCE.TRANSACTIONS.LIST.READ': 'Lista de transacciones consultada',
+  'FINANCE.TRANSACTIONS.CREATE': 'Nueva transacción registrada',
+  'FINANCE.TRANSACTIONS.UPDATE': 'Transacción actualizada',
+  'FINANCE.TRANSACTIONS.DELETE': 'Transacción eliminada',
 
-  // TRANSACTIONS Events
-  'TRANSACTIONS.CREATE': 'Nueva transacción registrada',
-  'TRANSACTIONS.UPDATE': 'Transacción actualizada',
-  'TRANSACTIONS.REVERSE': 'Transacción reversada',
-  'TRANSACTIONS.RECONCILE': 'Transacción conciliada',
+  // FINANCES — SETTLEMENTS
+  'FINANCE.SETTLEMENTS.LIST.READ': 'Lista de liquidaciones consultada',
+  'FINANCE.SETTLEMENTS.CANDIDATES.READ': 'Candidatos de liquidación consultados',
+  'FINANCE.SETTLEMENTS.CREATE': 'Nueva liquidación creada',
+  'FINANCE.SETTLEMENTS.UPDATE': 'Liquidación actualizada',
+  'FINANCE.SETTLEMENTS.DELETE': 'Liquidación eliminada',
+  'FINANCE.SETTLEMENTS.CALCULATE': 'Cálculos de liquidación realizados',
+  'FINANCE.SETTLEMENTS.COMPLETE': 'Liquidación completada',
+  'FINANCE.SETTLEMENTS.CANCEL': 'Liquidación cancelada',
+  'FINANCE.PRODUCERS.PENDING_BALANCE.READ': 'Saldo pendiente de productor consultado',
 
-  // RICE TYPES Events
-  'RICE_TYPES.CREATE': 'Nuevo tipo de arroz creado',
-  'RICE_TYPES.UPDATE': 'Tipo de arroz actualizado',
-  'RICE_TYPES.DELETE': 'Tipo de arroz eliminado',
+  // CONFIGURATION
+  'CONFIG.RICE_TYPES.READ': 'Tipos de arroz consultados',
+  'CONFIG.SEASONS.READ': 'Temporadas consultadas',
+  'CONFIG.TEMPLATES.READ': 'Plantillas consultadas',
+  'CONFIG.ANALYSIS_PARAMS.READ': 'Parámetros de análisis consultados',
+  'CONFIG.READ': 'Configuración consultada',
 
-  // SEASONS Events
-  'SEASONS.CREATE': 'Nueva temporada creada',
-  'SEASONS.UPDATE': 'Temporada actualizada',
-  'SEASONS.CLOSE': 'Temporada cerrada',
+  // ANALYTICS
+  'ANALYTICS.READ': 'Reportes y analytics consultados',
 
-  // TEMPLATES Events
-  'TEMPLATES.CREATE': 'Nuevo plantilla creada',
-  'TEMPLATES.UPDATE': 'Plantilla actualizada',
-  'TEMPLATES.DELETE': 'Plantilla eliminada',
+  // SYSTEM
+  'SYSTEM.GET': 'Consulta de sistema',
 
-  // ANALYTICS Events
-  'ANALYTICS.REPORT.GENERATE': 'Reporte generado',
-  'ANALYTICS.REPORT.EXPORT': 'Reporte exportado',
-  'ANALYTICS.VIEW': 'Análisis consultados',
-
-  // CONFIGURATION Events
-  'CONFIG.UPDATE': 'Configuración actualizada',
-  'CONFIG.BACKUP': 'Copia de seguridad realizada',
-
-  // SYSTEM Events
-  'SYSTEM.STARTUP': 'Sistema iniciado',
-  'SYSTEM.SHUTDOWN': 'Sistema detenido',
-  'SYSTEM.ERROR': 'Error del sistema',
-  'SYSTEM.SYNC': 'Sincronización de datos',
-  'SYSTEM.IMPORT': 'Datos importados',
-  'SYSTEM.EXPORT': 'Datos exportados',
 };
 
 /**

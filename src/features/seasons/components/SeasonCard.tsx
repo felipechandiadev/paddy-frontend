@@ -1,6 +1,7 @@
 'use client';
 
 import { Season } from '../types/seasons.types';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import Badge from '@/shared/components/ui/Badge/Badge';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 
@@ -26,6 +27,7 @@ const formatDate = (isoString: string) =>
   });
 
 export default function SeasonCard({ season, onEdit, onDelete }: SeasonCardProps) {
+  const { isAdmin } = usePermissions();
   const startDate = formatDate(season.startDate);
   const endDate = formatDate(season.endDate);
 
@@ -67,6 +69,7 @@ export default function SeasonCard({ season, onEdit, onDelete }: SeasonCardProps
           size="sm"
           onClick={() => onEdit?.(season)}
           title="Editar temporada"
+          disabled={!isAdmin}
         />
         <IconButton
           icon="delete"
@@ -74,6 +77,7 @@ export default function SeasonCard({ season, onEdit, onDelete }: SeasonCardProps
           size="sm"
           onClick={() => onDelete?.(season)}
           title="Eliminar temporada"
+          disabled={!isAdmin}
         />
       </div>
     </article>

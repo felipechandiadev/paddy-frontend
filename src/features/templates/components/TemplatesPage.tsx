@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import { Template } from '../types/templates.types';
 import TemplateCard from './TemplateCard';
@@ -18,6 +19,7 @@ export default function TemplatesPage({
   initialData,
   searchParams = {},
 }: TemplatesPageProps) {
+  const { isAdmin } = usePermissions();
   const [templates, setTemplates] = useState(initialData);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -60,6 +62,7 @@ export default function TemplatesPage({
           variant="ghost"
           onClick={() => setCreateDialogOpen(true)}
           title="Agregar nueva plantilla"
+          disabled={!isAdmin}
         />
         <div className="flex-1 max-w-md">
           <TemplatesSearchBar />

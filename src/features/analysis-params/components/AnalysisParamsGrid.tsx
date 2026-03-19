@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import DataGrid, { DataGridColumn } from '@/shared/components/ui/DataGrid';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import Switch from '@/shared/components/ui/Switch/Switch';
@@ -18,6 +19,7 @@ interface AnalysisParamsGridProps {
 export default function AnalysisParamsGrid({
   initialData,
 }: AnalysisParamsGridProps) {
+  const { isAdmin } = usePermissions();
   const [allData, setAllData] = React.useState<AnalysisParam[]>(initialData || []);
   const [filteredData, setFilteredData] = React.useState<AnalysisParam[]>(initialData || []);
   const [selectedParam, setSelectedParam] = React.useState<string | null>(null);
@@ -199,6 +201,7 @@ export default function AnalysisParamsGrid({
               }}
               ariaLabel={`Editar rango de ${item.discountName}`}
               title="Editar rango"
+              disabled={!isAdmin}
             />
           </div>
         );
@@ -226,6 +229,7 @@ export default function AnalysisParamsGrid({
         showSearch={true}
         pinActionsColumn={true}
         onAddClick={() => setCreateDialogOpen(true)}
+        addDisabled={!isAdmin}
         headerActions={
           <AnalysisParamsFilter
             data={allData}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePermissions } from '@/providers/PermissionsProvider';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Badge from '@/shared/components/ui/Badge/Badge';
 import { Template } from '../types/templates.types';
@@ -34,6 +35,7 @@ export default function TemplateCard({
   onEdit,
   onDelete,
 }: TemplateCardProps) {
+  const { isAdmin } = usePermissions();
   const activeParams = PARAM_LABELS.filter((p) => template[p.key]);
 
   return (
@@ -117,6 +119,7 @@ export default function TemplateCard({
           size="sm"
           onClick={() => onEdit(template)}
           title="Editar plantilla"
+          disabled={!isAdmin}
         />
         <IconButton
           icon="delete"
@@ -124,6 +127,7 @@ export default function TemplateCard({
           size="sm"
           onClick={() => onDelete(template)}
           title="Eliminar plantilla"
+          disabled={!isAdmin}
         />
       </div>
     </article>

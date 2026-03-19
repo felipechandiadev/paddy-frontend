@@ -1,8 +1,8 @@
 .sheet {
-  width: 297mm;
-  min-height: 210mm;
+  width: 215.9mm;
+  min-height: 279.4mm;
   margin: 0 auto;
-  padding: 14mm;
+  padding: 5mm;
   background: #ffffff;
   color: #111827;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -150,17 +150,30 @@
 }
 
 .receptionDetailTable {
-  font-size: 9px;
+  font-size: 8px;
 }
 
 .receptionDetailTable th,
 .receptionDetailTable td {
-  padding: 0.1rem 0.38rem;
-  line-height: 1.05;
+  padding: 0.05rem 0.22rem;
+  line-height: 1.0;
 }
 
 .paddyKgColumn {
   min-width: 72px;
+  white-space: nowrap;
+}
+
+.riceTypeColumn {
+  max-width: 50px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.guiaColumn {
+  max-width: 45px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -190,6 +203,10 @@
   color: #111827;
 }
 
+.receptionDetailTable .totalsRow td {
+  padding: 0.05rem 0.22rem;
+}
+
 .summaryBox {
   display: block;
   flex: 0 0 auto;
@@ -202,11 +219,15 @@
   justify-content: space-between;
   gap: 0.65rem;
   margin-top: 0.5rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .billingBox {
   flex: 1 1 auto;
   min-width: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .billingTable {
@@ -299,6 +320,20 @@
   border-left: 2.5px solid #6b7280;
 }
 
+.receptionNetColumn {
+  max-width: 52px;
+}
+
+.receptionDetailTable td.receptionNetColumn {
+  white-space: nowrap;
+}
+
+.receptionDetailTable th.receptionNetColumn {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.1;
+}
+
 .highlightRow {
   background: #eff6ff;
   font-weight: 800;
@@ -358,7 +393,7 @@
 }
 
 .signatureSection {
-  margin-top: 3.25rem;
+  margin-top: 1.75rem;
   display: flex;
   justify-content: flex-end;
 }
@@ -366,7 +401,7 @@
 .signatureBlock {
   position: relative;
   width: min(260px, 100%);
-  min-height: 118px;
+  height: 86px;
   display: flex;
   align-items: flex-end;
 }
@@ -374,7 +409,7 @@
 .signatureStamp {
   position: absolute;
   left: 50%;
-  top: 39px;
+  top: -1px;
   width: 119px;
   height: auto;
   transform: translateX(-50%) rotate(-19deg);

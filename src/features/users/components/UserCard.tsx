@@ -1,6 +1,7 @@
 'use client';
 
 import { User } from '../types/users.types';
+import { useCan } from '@/shared/hooks/useCan';
 import Badge from '@/shared/components/ui/Badge/Badge';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 
@@ -12,6 +13,7 @@ interface UserCardProps {
 }
 
 export default function UserCard({ user, onEdit, onDelete, onManagePermissions }: UserCardProps) {
+  const { can } = useCan();
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'ADMIN':
@@ -80,6 +82,7 @@ export default function UserCard({ user, onEdit, onDelete, onManagePermissions }
           size="sm"
           onClick={() => onManagePermissions?.(user)}
           title="Gestionar permisos"
+          disabled={!can('users.manage_permissions')}
         />
         <IconButton
           icon="edit"
@@ -87,6 +90,7 @@ export default function UserCard({ user, onEdit, onDelete, onManagePermissions }
           size="sm"
           onClick={() => onEdit?.(user)}
           title="Editar usuario"
+          disabled={!can('users.update')}
         />
         <IconButton
           icon="delete"
@@ -94,6 +98,7 @@ export default function UserCard({ user, onEdit, onDelete, onManagePermissions }
           size="sm"
           onClick={() => onDelete?.(user)}
           title="Eliminar usuario"
+          disabled={!can('users.delete')}
         />
       </div>
     </article>

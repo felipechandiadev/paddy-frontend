@@ -248,7 +248,9 @@ export default function GrainAnalysis() {
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-semibold text-gray-900">Análisis de Laboratorio</h3>
-            <RangesLoadedBadge />
+            <div className="mr-3">
+              <RangesLoadedBadge />
+            </div>
           </div>
 
           {/* Tabla con encabezado */}
@@ -449,9 +451,7 @@ export default function GrainAnalysis() {
                   <span className="text-xs text-cyan-700 bg-white/80 border border-secondary rounded px-2 py-1">
                     {groupToleranceParams.length} {groupedParamLabel}
                   </span>
-                  <span className="text-xs font-semibold text-cyan-700 bg-white/80 border border-secondary rounded px-2 py-1">
-                    {groupedParamTolerance.toFixed(2)}% por parámetro
-                  </span>
+
                 </>
               )}
             </div>

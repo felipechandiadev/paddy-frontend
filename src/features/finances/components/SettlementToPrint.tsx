@@ -74,7 +74,7 @@ function formatCurrency(value: number): string {
 function formatKg(value: number): string {
   const formattedValue = new Intl.NumberFormat('es-CL', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(value);
 
   return `${formattedValue} kg`;
@@ -361,8 +361,8 @@ export default function SettlementToPrint({ settlement }: SettlementToPrintProps
             <tr>
               <th>Fecha</th>
               <th className={styles.rightAlign}>Folio</th>
-              <th>Guia</th>
-              <th>Tipo de arroz</th>
+              <th className={styles.guiaColumn}>Guia</th>
+              <th className={styles.riceTypeColumn}>Arroz</th>
               <th className={`${styles.rightAlign} ${styles.paddyKgColumn}`}>Paddy kg</th>
               <th className={styles.rightAlign}>Precio</th>
               <th className={styles.rightAlign}>Sub-neto Paddy</th>
@@ -372,9 +372,9 @@ export default function SettlementToPrint({ settlement }: SettlementToPrintProps
               <th className={styles.rightAlign}>Sub-neto secado</th>
               <th className={styles.rightAlign}>IVA Secado</th>
               <th className={styles.rightAlign}>Total Secado</th>
-              <th className={`${styles.rightAlign} ${styles.receptionDivider}`}>Neto recepcion</th>
-              <th className={styles.rightAlign}>IVA recepcion</th>
-              <th className={styles.rightAlign}>Total recepcion</th>
+              <th className={`${styles.rightAlign} ${styles.receptionDivider} ${styles.receptionNetColumn}`}>Neto recepcion</th>
+              <th className={`${styles.rightAlign} ${styles.receptionNetColumn}`}>IVA recepcion</th>
+              <th className={`${styles.rightAlign} ${styles.receptionNetColumn}`}>Total recepcion</th>
             </tr>
           </thead>
           <tbody>
@@ -398,8 +398,8 @@ export default function SettlementToPrint({ settlement }: SettlementToPrintProps
                   <tr key={line.id}>
                     <td>{formatDate(line.receptionDate)}</td>
                     <td className={styles.rightAlign}>{line.id}</td>
-                    <td>{line.guideNumber || '-'}</td>
-                    <td>{line.riceTypeName || '-'}</td>
+                    <td className={styles.guiaColumn}>{line.guideNumber || '-'}</td>
+                    <td className={styles.riceTypeColumn}>{line.riceTypeName || '-'}</td>
                     <td className={`${styles.rightAlign} ${styles.paddyKgColumn}`}>
                       {formatKg(line.paddyKg)}
                     </td>
@@ -411,11 +411,11 @@ export default function SettlementToPrint({ settlement }: SettlementToPrintProps
                     <td className={styles.rightAlign}>{formatCurrency(line.dryingSubTotal)}</td>
                     <td className={styles.rightAlign}>{formatCurrency(dryingVat)}</td>
                     <td className={styles.rightAlign}>{formatCurrency(dryingTotal)}</td>
-                    <td className={`${styles.rightAlign} ${styles.receptionDivider}`}>
+                    <td className={`${styles.rightAlign} ${styles.receptionDivider} ${styles.receptionNetColumn}`}>
                       {formatCurrency(receptionNet)}
                     </td>
-                    <td className={styles.rightAlign}>{formatCurrency(receptionVat)}</td>
-                    <td className={styles.rightAlign}>{formatCurrency(receptionTotal)}</td>
+                    <td className={`${styles.rightAlign} ${styles.receptionNetColumn}`}>{formatCurrency(receptionVat)}</td>
+                    <td className={`${styles.rightAlign} ${styles.receptionNetColumn}`}>{formatCurrency(receptionTotal)}</td>
                   </tr>
                 );
               })

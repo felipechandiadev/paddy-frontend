@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { signOut } from 'next-auth/react';
 import { useReactToPrint } from 'react-to-print';
 import Select, { Option } from '@/shared/components/ui/Select/Select';
-import { Button } from '@/shared/components/ui/Button/Button';
+import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import { AdvanceSeasonOption } from '@/features/finances/types/finances.types';
 import {
@@ -465,49 +465,51 @@ const InventoryBookReport: React.FC<InventoryBookReportProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 print:hidden">
-        <div className="min-w-[220px]">
-          <Select
-            label="Temporada"
-            options={seasonOptions}
-            value={filters.seasonId ?? null}
-            onChange={(value) => {
-              setFilters({
-                seasonId: toOptionalNumber(value),
-                month: undefined,
-              });
-              setSeasonSummary(null);
-              setReport(null);
-            }}
-          />
-        </div>
+      <div className="grid grid-cols-1 gap-3 items-end md:grid-cols-2 xl:grid-cols-2 print:hidden">
+        <Select
+          label="Temporada"
+          options={seasonOptions}
+          value={filters.seasonId ?? null}
+          onChange={(value) => {
+            setFilters({
+              seasonId: toOptionalNumber(value),
+              month: undefined,
+            });
+            setSeasonSummary(null);
+            setReport(null);
+          }}
+        />
 
-        <div className="min-w-[220px]">
-          <Select
-            label="Mes"
-            options={monthOptions}
-            value={filters.month ?? null}
-            onChange={(value) =>
-              setFilters((prev) => ({
-                ...prev,
-                month: value ? String(value) : undefined,
-              }))
-            }
-            disabled={monthOptions.length === 0}
-          />
-        </div>
+        <Select
+          label="Mes"
+          options={monthOptions}
+          value={filters.month ?? null}
+          onChange={(value) =>
+            setFilters((prev) => ({
+              ...prev,
+              month: value ? String(value) : undefined,
+            }))
+          }
+          disabled={monthOptions.length === 0}
+        />
+      </div>
 
-        <div className="min-w-[220px]">
-          <Button variant="primary" onClick={() => void runReport()} disabled={loading || !filters.seasonId}>
-          {loading ? 'Calculando…' : 'Actualizar'}
-          </Button>
-        </div>
-
-        {report && (
-          <Button variant="secondary" onClick={() => handlePrint()}>
-            Imprimir / PDF
-          </Button>
-        )}
+      <div className="flex justify-end gap-2 print:hidden">
+        <IconButton
+          icon="print"
+          variant="basicSecondary"
+          disabled={!report || loading}
+          onClick={() => handlePrint()}
+          ariaLabel="Imprimir"
+        />
+        <IconButton
+          icon="bar_chart"
+          variant="ghost"
+          isLoading={loading}
+          disabled={!filters.seasonId}
+          onClick={() => void runReport()}
+          ariaLabel="Generar Reporte"
+        />
       </div>
 
       {error && !loading && <Alert variant="error">Error al generar el reporte: {error}</Alert>}

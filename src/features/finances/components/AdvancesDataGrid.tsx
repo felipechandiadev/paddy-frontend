@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useCan } from '@/shared/hooks/useCan';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
@@ -49,6 +50,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
   ...dataGridProps
 }) => {
   const searchParams = useSearchParams();
+  const { can } = useCan();
   const currencyFormatter = React.useMemo(
     () =>
       new Intl.NumberFormat('es-CL', {
@@ -272,8 +274,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
     {
       field: 'producer',
       headerName: 'Productor',
-      flex: 1,
-      minWidth: 200,
+      width: 220,
       sortable: true,
       valueGetter: (params) => params.row.producer?.name || 'N/A',
     },
@@ -307,8 +308,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
     {
       field: 'bank',
       headerName: 'Banco',
-      minWidth: 220,
-      flex: 1,
+      width: 220,
       sortable: true,
       valueGetter: (params) => {
         const raw = params.row.bank;
@@ -351,8 +351,16 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
       field: 'issueDate',
       headerName: 'Fecha Entrega',
       width: 140,
-      renderType: 'dateString',
       sortable: true,
+      renderCell: ({ value }) => {
+        if (!value) return '-';
+        const d = new Date(String(value));
+        if (isNaN(d.getTime())) return String(value);
+        const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(d.getUTCDate()).padStart(2, '0');
+        const yyyy = d.getUTCFullYear();
+        return `${dd}-${mm}-${yyyy}`;
+      },
     },
     {
       field: 'interestEndDate',
@@ -416,8 +424,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
     {
       field: 'description',
       headerName: 'Descripción',
-      flex: 1,
-      minWidth: 200,
+      width: 220,
       valueGetter: (params) => params.row.description || '-',
     },
     {
@@ -428,9 +435,9 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
       filterable: false,
       renderCell: ({ row }) => {
         const isAnnulled = row.status === 'cancelled' || Boolean(row.deletedAt);
-        const canEdit = !isAnnulled;
-        const canManageInterest = !isAnnulled;
-        const canDelete = !isAnnulled;
+        const canEdit = !isAnnulled && can('advances.update');
+        const canManageInterest = !isAnnulled && can('advances.change_interest');
+        const canDelete = !isAnnulled && can('advances.cancel');
         const canPrintReceipt = !isAnnulled;
 
         return (
@@ -512,6 +519,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
         showBorder={false}
         pinActionsColumn={true}
         onAddClick={() => setIsCreateDialogOpen(true)}
+        addDisabled={!can('advances.create')}
         onExportExcel={handleExportExcel}
         {...dataGridProps}
       />
@@ -614,7 +622,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
         size="lg"
         fullWidth={true}
         maxWidth="96vw"
-        pageSize="A4"
+        pageSize="Letter"
         pageOrientation="portrait"
         disablePrint={
           isLoadingAdvanceForPrint ||

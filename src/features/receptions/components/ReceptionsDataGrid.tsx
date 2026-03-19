@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useCan } from '@/shared/hooks/useCan';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import Alert from '@/shared/components/ui/Alert/Alert';
@@ -28,6 +29,7 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
   ...props
 }) => {
   const searchParams = useSearchParams();
+  const { can } = useCan();
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [editingReception, setEditingReception] = React.useState<ReceptionListItem | null>(null);
@@ -489,7 +491,7 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
                     : 'Editar recepción'
               }
               ariaLabel="Editar recepción"
-              disabled={isAnnulled || isSettled}
+              disabled={isAnnulled || isSettled || !can('receptions.update')}
             />
             <IconButton
               icon="print"
@@ -513,14 +515,14 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
                     : 'Anular recepción'
               }
               ariaLabel="Anular recepción"
-              disabled={isAnnulled || isSettled}
+              disabled={isAnnulled || isSettled || !can('receptions.cancel')}
             />
           </div>
           );
         },
       },
     ],
-    [currencyFormatter, formatWeightValue, handleEdit, handlePrint, openDeleteDialog],
+    [currencyFormatter, formatWeightValue, handleEdit, handlePrint, openDeleteDialog, can],
   );
 
   return (
@@ -541,6 +543,7 @@ const ReceptionsDataGrid: React.FC<ReceptionsDataGridProps> = ({
         showSortButton={true}
         showBorder={false}
         onAddClick={() => setCreateDialogOpen(true)}
+        addDisabled={!can('receptions.create')}
         onExportExcel={handleExportExcel}
         {...props}
         pinActionsColumn={true}

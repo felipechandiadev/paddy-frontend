@@ -18,6 +18,7 @@ interface HeaderProps {
   createForm?: React.ReactNode;
   createFormTitle?: string;
   onAddClick?: () => void; // Callback para el botón + (abre diálogo externo)
+  addDisabled?: boolean; // Deshabilita el botón + sin ocultarlo
   screenWidth?: number;
   onExportExcel?: () => Promise<void>;
   headerActions?: React.ReactNode; // Slot para componentes adicionales (ej: filtros externos)
@@ -36,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({
   createForm,
   createFormTitle,
   onAddClick,
+  addDisabled = false,
   screenWidth = 1024,
   onExportExcel,
   headerActions,
@@ -117,6 +119,7 @@ const Header: React.FC<HeaderProps> = ({
               variant="ghost" 
               size="md"
               onClick={onAddClick || (() => setIsCreateModalOpen(true))}
+              disabled={addDisabled}
               data-test-id="add-button"
             />
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useCan } from '@/shared/hooks/useCan';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import UsersSearchBar from './UsersSearchBar';
 import UserCard from './UserCard';
@@ -17,6 +18,7 @@ interface UsersPageProps {
 export default function UsersPage({ initialUsers }: UsersPageProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const { can } = useCan();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
@@ -51,6 +53,7 @@ export default function UsersPage({ initialUsers }: UsersPageProps) {
           variant="ghost"
           onClick={() => setCreateDialogOpen(true)}
           title="Crear nuevo usuario"
+          disabled={!can('users.create')}
         />
         <UsersSearchBar />
       </div>
