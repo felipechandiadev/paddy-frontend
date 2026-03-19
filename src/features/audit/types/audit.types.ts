@@ -28,7 +28,8 @@ export interface AuditEventsResponse {
     limit: number;
     totalPages: number;
   };
-  message: string;
+  timestamp?: string;
+  message?: string;
 }
 
 export interface AuditFilters {
