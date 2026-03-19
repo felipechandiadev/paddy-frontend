@@ -17,6 +17,7 @@ interface ReceptionGeneralDataProps {
   disableProducerSelection?: boolean;
   disableRiceTypeSelection?: boolean;
   disableDefaultTemplateLoad?: boolean;
+  producerAutocompleteRef?: React.RefObject<HTMLInputElement>;
 }
 
 interface ProducerOption {
@@ -73,8 +74,9 @@ export default function ReceptionGeneralData({
   disableProducerSelection = false,
   disableRiceTypeSelection = false,
   disableDefaultTemplateLoad = false,
+  producerAutocompleteRef,
 }: ReceptionGeneralDataProps) {
-  const { data, setData, template, setTemplate } = useReceptionContext();
+  const { data, setData, template, setTemplate, setTemplateReady } = useReceptionContext();
 
   const [producers, setProducers] = useState<ProducerOption[]>([]);
   const [riceTypes, setRiceTypes] = useState<RiceType[]>([]);
@@ -127,6 +129,7 @@ export default function ReceptionGeneralData({
   useEffect(() => {
     if (disableDefaultTemplateLoad) {
       console.log('[TEMPLATE] Carga de plantilla deshabilitada (isEditMode)');
+      setTemplateReady(true); // Está lista aunque no se cargue (en edit mode)
       return;
     }
 
@@ -199,17 +202,20 @@ export default function ReceptionGeneralData({
             toleranceBonus: defaultTemplate.toleranceBonus ?? 0,
             percentDry: defaultTemplate.percentDry ?? 0,
           });
+          setTemplateReady(true); // ✅ Plantilla lista
         } else {
           setCurrentTemplateName('Sin plantilla');
           setData('templateId', 0);
+          setTemplateReady(true); // ✅ Ya no hay más q esperar
         }
       } catch (error) {
         console.error('Error loading default template:', error);
         setCurrentTemplateName('Error al cargar');
+        setTemplateReady(true); // ✅ Error, pero ya terminó el intento
       }
     };
     loadDefaultTemplate();
-  }, [disableDefaultTemplateLoad, setData, setTemplate]);
+  }, [disableDefaultTemplateLoad, setData, setTemplate, setTemplateReady]);
 
   // Cargar productores
   useEffect(() => {
@@ -284,6 +290,9 @@ export default function ReceptionGeneralData({
     if (!option) {
       setData('producerId', 0);
       setData('producerName', '');
+      setData('producerRut', '');
+      setData('producerAddress', '');
+      setData('producerCity', '');
       return;
     }
 
@@ -295,6 +304,9 @@ export default function ReceptionGeneralData({
 
     setData('producerId', option.id);
     setData('producerName', option.name);
+    setData('producerRut', option.rut);
+    setData('producerAddress', '');
+    setData('producerCity', option.city);
   };
 
   const handleProducerCreated = (producer: ProducerRecord) => {
@@ -302,6 +314,9 @@ export default function ReceptionGeneralData({
 
     setData('producerId', normalizedProducer.id);
     setData('producerName', normalizedProducer.name);
+    setData('producerRut', normalizedProducer.rut);
+    setData('producerAddress', '');
+    setData('producerCity', normalizedProducer.city);
     setProducerSearch('');
     setProducerAutocompleteResetKey((prev) => prev + 1);
 
@@ -463,6 +478,7 @@ export default function ReceptionGeneralData({
           getOptionValue={(option) => option.id}
           filterOption={filterProducerOption}
           disabled={loadingProducers || disableProducerSelection}
+          inputRef={producerAutocompleteRef}
           required
         />
 

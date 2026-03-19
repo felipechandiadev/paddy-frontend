@@ -79,6 +79,7 @@ function CreateReceptionDialogContent({
     calculateTotals,
     setData,
     setTemplate,
+    isTemplateReady,
     resetData,
   } = useReceptionContext();
   const isEditMode = mode === 'edit' && Boolean(initialReception?.id);
@@ -93,6 +94,7 @@ function CreateReceptionDialogContent({
   const [realPrintReception, setRealPrintReception] = React.useState<PrintableReception | null>(null);
   const [initializingEditData, setInitializingEditData] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement | null>(null);
+  const producerAutocompleteRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     if (!isEditMode || !initialReception || !editReceptionId) {
@@ -408,6 +410,17 @@ function CreateReceptionDialogContent({
     setTemplate,
   ]);
 
+  // Establecer focus en el productor cuando el diálogo abre (en modo creación)
+  React.useEffect(() => {
+    if (!open || isEditMode) {
+      return;
+    }
+    
+    setTimeout(() => {
+      producerAutocompleteRef.current?.focus();
+    }, 300);
+  }, [open, isEditMode]);
+
   const buildCreatePayload = React.useCallback(() => {
     const note = data.note?.trim() || undefined;
     const dryPercent = Number(clusters.Dry.percent?.getValue() ?? 0) || 0;
@@ -570,9 +583,9 @@ function CreateReceptionDialogContent({
     return {
       id: 0,
       producer: data.producerName || 'Sin productor',
-      rut: '',
-      producerAddress: '',
-      producerCity: '',
+      rut: data.producerRut || '-',
+      producerAddress: data.producerAddress || '',
+      producerCity: data.producerCity || '',
       riceType: data.riceTypeName || 'Sin tipo de arroz',
       templateName: 'Previsualización',
       templateConfig,
@@ -608,16 +621,25 @@ function CreateReceptionDialogContent({
   const handleClosePreview = React.useCallback(() => {
     setPreviewOpen(false);
     setPreviewError(null);
+    // Establecer focus en el productor
+    setTimeout(() => {
+      producerAutocompleteRef.current?.focus();
+    }, 100);
   }, []);
 
   const handleCloseRealPrint = React.useCallback(() => {
     setRealPrintOpen(false);
     setRealPrintReception(null);
+    // Establecer focus en el autocomplete del productor para la siguiente recepción
+    setTimeout(() => {
+      producerAutocompleteRef.current?.focus();
+    }, 100);
   }, []);
 
   const handleSaveReception = React.useCallback(async () => {
     console.log('[GUARDAR] Click en Guardar Recepción');
     console.log('[GUARDAR] Estado data:', JSON.stringify(data));
+    console.log('[GUARDAR] isTemplateReady:', isTemplateReady);
     setSavingReception(true);
     setPreviewError(null);
 
@@ -625,6 +647,13 @@ function CreateReceptionDialogContent({
       if (isEditMode && !initialReception) {
         console.log('[GUARDAR] No se encontró la recepción a editar');
         setPreviewError('No se encontró la recepción a editar.');
+        setSavingReception(false);
+        return;
+      }
+
+      if (!isTemplateReady) {
+        console.log('[GUARDAR] Plantilla aún no está lista');
+        setPreviewError('La plantilla se está cargando. Por favor espere...');
         setSavingReception(false);
         return;
       }
@@ -733,6 +762,7 @@ function CreateReceptionDialogContent({
     data.templateId,
     initialReception,
     isEditMode,
+    isTemplateReady,
     onSuccess,
     validateReception,
   ]);
@@ -892,6 +922,7 @@ function CreateReceptionDialogContent({
               disableProducerSelection={isEditMode}
               disableRiceTypeSelection={isEditMode}
               disableDefaultTemplateLoad={isEditMode}
+              producerAutocompleteRef={producerAutocompleteRef}
             />
           </div>
         </div>

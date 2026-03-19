@@ -39,7 +39,16 @@ const RicePriceTrendChart: React.FC<RicePriceTrendChartProps> = ({
 }) => {
   const allPeriods = useMemo(() => {
     if (series.length === 0) return [];
-    return series[0].data.map((d) => d.periodKey);
+    // ✅ Solo períodos que tienen datos EN ALGUNA SERIE
+    const periodsWithData = new Set<string>();
+    for (const s of series) {
+      s.data.forEach((point) => {
+        if (point.weightedAvgPrice != null) {
+          periodsWithData.add(point.periodKey);
+        }
+      });
+    }
+    return Array.from(periodsWithData).sort();
   }, [series]);
 
   const tickValues = useMemo(() => buildTickValues(allPeriods), [allPeriods]);
@@ -50,10 +59,12 @@ const RicePriceTrendChart: React.FC<RicePriceTrendChartProps> = ({
     () =>
       series.map((rt) => ({
         id: rt.riceTypeName,
-        data: rt.data.map((point) => ({
-          x: point.periodKey,
-          y: point.weightedAvgPrice ?? 0,
-        })),
+        data: rt.data
+          .filter((point) => point.weightedAvgPrice != null) // ✅ Filtrar solo puntos con datos
+          .map((point) => ({
+            x: point.periodKey,
+            y: point.weightedAvgPrice, // ✅ Ya no convierte null a 0
+          })),
       })),
     [series],
   );

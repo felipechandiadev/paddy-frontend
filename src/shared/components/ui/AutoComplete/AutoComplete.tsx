@@ -26,6 +26,7 @@ interface AutoCompleteProps<T = Option> {
   filterOption?: (option: T, inputValue: string) => boolean;
   ["data-test-id"]?: string;
   disabled?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 // Ref map para tracking de items renderizados
@@ -45,6 +46,7 @@ const AutoComplete = <T = Option,>({
   getOptionLabel,
   getOptionValue,
   filterOption,
+  inputRef: externalInputRef,
   ...props
 }: AutoCompleteProps<T>) => {
   // Helper functions with defaults for backward compatibility
@@ -75,6 +77,15 @@ const AutoComplete = <T = Option,>({
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const disabled = (props as any).disabled;
+
+  // Vincular el ref externo al ref interno
+  useEffect(() => {
+    if (externalInputRef && inputRef.current) {
+      if (externalInputRef.current !== inputRef.current) {
+        (externalInputRef as any).current = inputRef.current;
+      }
+    }
+  }, [externalInputRef]);
 
   // Sync inputValue with value prop
   useEffect(() => {

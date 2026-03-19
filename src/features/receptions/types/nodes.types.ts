@@ -131,6 +131,9 @@ export interface ReceptionData {
   id?: number;
   producerId: number;
   producerName: string;
+  producerRut?: string;
+  producerAddress?: string;
+  producerCity?: string;
   riceTypeId: number;
   riceTypeName: string;
   templateId?: number;
@@ -159,10 +162,12 @@ export interface ReceptionContextType {
   template: TemplateConfig;
   clusters: Record<string, ParamCluster>;
   version: number; // Para sincronizar cambios en nodos
+  isTemplateReady: boolean; // Indica si la plantilla por defecto ha sido cargada
   
   // Funciones de actualización
   setData: (field: keyof ReceptionData, value: any) => void;
   setTemplate: (config: Partial<TemplateConfig>) => void;
+  setTemplateReady: (ready: boolean) => void;
   setClusterValue: (clusterKey: string, nodeKey: string, value: number) => void;
   
   // Gestión de plantilla

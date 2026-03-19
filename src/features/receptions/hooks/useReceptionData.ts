@@ -72,8 +72,12 @@ const DEFAULT_TEMPLATE: TemplateConfig = {
 const DEFAULT_DATA: ReceptionData = {
   producerId: 0,
   producerName: '',
+  producerRut: '',
+  producerAddress: '',
+  producerCity: '',
   riceTypeId: 0,
   riceTypeName: '',
+  templateId: 0,
   price: 0,
   guide: '',
   licensePlate: '',
@@ -91,6 +95,7 @@ export function useReceptionData(): ReceptionContextType {
   const [data, setDataState] = useState<ReceptionData>(DEFAULT_DATA);
   const [template, setTemplateState] = useState<TemplateConfig>(DEFAULT_TEMPLATE);
   const [version, setVersion] = useState(0);
+  const [isTemplateReady, setIsTemplateReady] = useState(false);
   const authRedirectInProgressRef = useRef(false);
   
   // Flag para evitar ciclos infinitos durante cálculos
@@ -418,6 +423,11 @@ export function useReceptionData(): ReceptionContextType {
     }
   }, [clusters]);
 
+  // Marcar plantilla como lista
+  const setTemplateReady = useCallback((ready: boolean) => {
+    setIsTemplateReady(ready);
+  }, []);
+
   // Actualizar valor en cluster
   const setClusterValue = useCallback(
     (clusterKey: string, nodeKey: string, value: number) => {
@@ -529,8 +539,10 @@ export function useReceptionData(): ReceptionContextType {
     template,
     clusters,
     version, // 🔄 Para que los componentes se sincronicen con cambios en nodos
+    isTemplateReady,
     setData,
     setTemplate,
+    setTemplateReady,
     setClusterValue,
     loadTemplate,
     validateReception,

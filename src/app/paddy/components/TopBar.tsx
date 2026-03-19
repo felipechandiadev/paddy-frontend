@@ -68,6 +68,11 @@ export default function PaddyTopBar() {
     },
    
     {
+      id: 'audit',
+      label: 'Auditoría',
+      url: '/paddy/audit',
+    },
+    {
       id: 'settings',
       label: 'Configuración',
       children: [
