@@ -120,7 +120,7 @@ export function useReceptionData(): ReceptionContextType {
       Vano: createParamCluster('Vano', 'Vano'),
       Hualcacho: createParamCluster('Hualcacho', 'Hualcacho'),
       GranosManchados: createParamCluster('GranosManchados', 'Granos Manchados'),
-      GranosPelados: createParamCluster('GranosPelados', 'Granos Pelados'),
+      GranosPelados: createParamCluster('GranosPelados', 'Granos Partidos'),
       GranosYesosos: createParamCluster('GranosYesosos', 'Granos Yesosos'),
       Summary: createSummaryCluster(),
       Bonus: createBonusCluster(),
