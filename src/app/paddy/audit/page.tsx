@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getSession } from 'next-auth/react';
+import getSession from 'next-auth/next';
+import { authOptions } from '@/lib/auth.config';
 import { fetchAuditEvents, AuditPage } from '@/features/audit';
 
 export const dynamic = 'force-dynamic';
@@ -27,11 +28,11 @@ interface AuditRouteProps {
 }
 
 export default async function AuditRoute({ searchParams }: AuditRouteProps) {
-  const session = await getSession();
+  const session = await getSession(authOptions);
 
   // Verificar que el usuario esté autenticado
   if (!session) {
-    redirect('/login');
+    redirect('/');
   }
 
   const params = await searchParams;
