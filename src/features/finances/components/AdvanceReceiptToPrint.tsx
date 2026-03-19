@@ -201,8 +201,8 @@ export default function AdvanceReceiptToPrint({
                 <span className={styles.summaryValue}>{advance.checkBankName || '-'}</span>
               </div>
               <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>Fecha emision</span>
-                <span className={styles.summaryValue}>{formatDate(advance.checkIssueDate)}</span>
+                <span className={styles.summaryLabel}>Fecha de entrega</span>
+                <span className={styles.summaryValue}>{issueDateLabel}</span>
               </div>
               <div className={styles.summaryRow}>
                 <span className={styles.summaryLabel}>Fecha cobro</span>
