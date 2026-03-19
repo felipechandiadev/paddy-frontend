@@ -39,17 +39,8 @@ export default async function AuditRoute({ searchParams }: AuditRouteProps) {
   const page = parseInt(params.page || '1');
   const limit = parseInt(params.limit || '20');
 
-  // Construir filtros
+  // Only use pagination parameters, no filters
   const filters = {
-    startDate: params.startDate,
-    endDate: params.endDate,
-    actorUserId: params.actorUserId ? parseInt(params.actorUserId) : undefined,
-    actorEmail: params.actorEmail,
-    severity: params.severity as any,
-    status: params.status as any,
-    category: params.category,
-    eventCode: params.eventCode,
-    correlationId: params.correlationId,
     page,
     limit,
   };
