@@ -21,7 +21,25 @@ function formatDate(value?: string | null): string {
     return '-';
   }
 
-  const date = new Date(value);
+  // Parsear fecha YYYY-MM-DD como fecha local para evitar problemas de zona horaria
+  const dateStr = String(value).trim();
+  const parts = dateStr.split('-');
+  
+  if (parts.length === 3) {
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+    
+    if (Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)) {
+      const date = new Date(year, month - 1, day);
+      if (!Number.isNaN(date.getTime())) {
+        return date.toLocaleDateString('es-CL');
+      }
+    }
+  }
+  
+  // Fallback para otros formatos
+  const date = new Date(dateStr);
   if (Number.isNaN(date.getTime())) {
     return '-';
   }
@@ -116,7 +134,7 @@ export default function AdvanceReceiptToPrint({
         </div>
         <div className={styles.documentMeta}>
           <h2 className={styles.documentTitle}>RECEPCION CONFORME DE ANTICIPO</h2>
-          <p className={styles.documentDate}>Fecha entrega: {issueDateLabel}</p>
+          <p className={styles.documentDate}>Fecha de entrega: {issueDateLabel}</p>
           <p className={styles.guideBadge}>Folio {advance.id}</p>
         </div>
       </header>
