@@ -16,6 +16,9 @@ export interface AuditEvent {
   ip: string | null;
   requestId: string | null;
   correlationId: string | null;
+  beforeData?: any; // Valores anteriores a la actualización
+  afterData?: any; // Valores nuevos después de la actualización
+  metadata?: any;
   errorMessage: string | null;
   createdAt: string;
 }

@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import DataGrid, { DataGridColumn } from '@/shared/components/ui/DataGrid';
+import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import { AuditEvent } from '../types/audit.types';
 import { getEventDescription } from '../constants/event-descriptions';
+import AuditEventDetailsDialog from './AuditEventDetailsDialog';
 
 interface AuditEventsDataGridProps {
   events: AuditEvent[];
@@ -43,22 +45,33 @@ export default function AuditEventsDataGrid({
 }: AuditEventsDataGridProps) {
   // Ensure events is always an array
   const safeEvents = Array.isArray(events) ? events : [];
+  
+  // Estado para el dialog de detalles
+  const [selectedEvent, setSelectedEvent] = useState<AuditEvent | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const openDetails = (event: AuditEvent) => {
+    setSelectedEvent(event);
+    setDetailsOpen(true);
+  };
 
   const columns: DataGridColumn[] = useMemo(
     () => [
       {
         field: 'id',
         headerName: 'ID',
-        width: 70,
+        flex: 0.5,
+        minWidth: 70,
         type: 'number',
         sortable: true,
       },
       {
         field: 'createdAt',
         headerName: 'Fecha/Hora',
-        width: 180,
+        flex: 1,
+        minWidth: 120,
         sortable: true,
-        valueGetter: (params) => {
+        valueGetter: (params: any) => {
           const date = new Date(params.row.createdAt);
           return date.toLocaleString('es-CL', {
             year: 'numeric',
@@ -74,10 +87,11 @@ export default function AuditEventsDataGrid({
       {
         field: 'description',
         headerName: 'Descripción',
-        width: 320,
+        flex: 2,
+        minWidth: 180,
         sortable: false,
-        valueGetter: (params) => params.row.description || getEventDescription(params.row.eventCode),
-        renderCell: ({ value }) => (
+        valueGetter: (params: any) => params.row.description || getEventDescription(params.row.eventCode),
+        renderCell: ({ value }: { value: any }) => (
           <span className="text-neutral-900 font-medium">
             {value || '-'}
           </span>
@@ -86,9 +100,10 @@ export default function AuditEventsDataGrid({
       {
         field: 'method',
         headerName: 'Método',
-        width: 90,
+        flex: 0.7,
+        minWidth: 90,
         sortable: true,
-        renderCell: ({ value }) => (
+        renderCell: ({ value }: { value: any }) => (
           <span
             style={{
               backgroundColor: methodColors[value] || '#6b7280',
@@ -106,9 +121,10 @@ export default function AuditEventsDataGrid({
       {
         field: 'status',
         headerName: 'Estado',
-        width: 100,
+        flex: 0.7,
+        minWidth: 80,
         sortable: true,
-        renderCell: ({ value }) => (
+        renderCell: ({ value }: { value: any }) => (
           <span
             style={{
               backgroundColor: statusColors[value] || '#6b7280',
@@ -126,9 +142,10 @@ export default function AuditEventsDataGrid({
       {
         field: 'severity',
         headerName: 'Severidad',
-        width: 120,
+        flex: 0.7,
+        minWidth: 80,
         sortable: true,
-        renderCell: ({ value }) => (
+        renderCell: ({ value }: { value: any }) => (
           <span
             style={{
               backgroundColor: severityColors[value] || '#6b7280',
@@ -146,25 +163,36 @@ export default function AuditEventsDataGrid({
       {
         field: 'actorEmail',
         headerName: 'Usuario',
-        width: 200,
+        flex: 1,
+        minWidth: 120,
         sortable: true,
-        valueGetter: (params) => params.row.actorEmail || 'Sistema',
+        valueGetter: (params: any) => params.row.actorEmail || 'Sistema',
       },
       {
         field: 'route',
         headerName: 'Ruta',
-        width: 280,
+        flex: 1,
+        minWidth: 120,
         sortable: true,
+        hide: true,
       },
       {
-        field: 'errorMessage',
-        headerName: 'Error',
-        width: 320,
+        field: 'actions',
+        headerName: 'Acciones',
+        flex: 0.5,
+        minWidth: 70,
         sortable: false,
-        renderCell: ({ value }) => (
-          <span style={{ fontSize: '12px', color: value ? '#dc2626' : '#9ca3af' }}>
-            {value || '-'}
-          </span>
+        headerAlign: 'center',
+        align: 'center',
+        renderCell: ({ row }: { row: any }) => (
+          <IconButton
+            icon="description"
+            variant="basicSecondary"
+            size="sm"
+            onClick={() => openDetails(row)}
+            ariaLabel="Ver detalles del evento"
+            title="Ver todos los detalles del evento"
+          />
         ),
       },
     ],
@@ -188,16 +216,26 @@ export default function AuditEventsDataGrid({
   }
 
   return (
-    <DataGrid
-      columns={columns}
-      rows={safeEvents}
-      totalRows={safeEvents.length}
-      title="Eventos de Auditoría"
-      height="85vh"
-      showSearch={true}
-      showSortButton={true}
-      showBorder={false}
-      showExportButton={false}
-    />
+    <>
+      <DataGrid
+        columns={columns}
+        rows={safeEvents}
+        totalRows={safeEvents.length}
+        title="Eventos de Auditoría"
+        height="85vh"
+        showSearch={true}
+        showSortButton={true}
+        showBorder={false}
+        showExportButton={false}
+      />
+      <AuditEventDetailsDialog
+        event={selectedEvent}
+        open={detailsOpen}
+        onClose={() => {
+          setDetailsOpen(false);
+          setSelectedEvent(null);
+        }}
+      />
+    </>
   );
 }

@@ -37,11 +37,12 @@ export default async function AuditRoute({ searchParams }: AuditRouteProps) {
 
   const params = await searchParams;
   const page = parseInt(params.page || '1');
+  const limit = parseInt(params.limit || '25');
 
-  // Always load all events - DataGrid handles client-side pagination
+  // Pasa el limit desde los searchParams
   const filters = {
     page,
-    limit: 1000,
+    limit,
   };
 
   try {

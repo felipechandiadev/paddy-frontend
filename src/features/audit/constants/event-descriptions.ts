@@ -3,6 +3,8 @@
  * Mapea eventCode a una descripción amigable en español
  */
 export const EVENT_DESCRIPTIONS: Record<string, string> = {
+    'CONFIG.RICE_TYPES.PUT': 'Tipo de arroz actualizado',
+  'CONFIG.RICE_TYPES.UPDATE': 'Tipo de arroz actualizado',
   // AUTH
   'AUTH.LOGIN.ATTEMPT': 'Intento de inicio de sesión',
   'AUTH.REGISTER.ATTEMPT': 'Registro de nuevo usuario',
