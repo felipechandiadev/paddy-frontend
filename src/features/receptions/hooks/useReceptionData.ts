@@ -23,7 +23,7 @@ const DEFAULT_TEMPLATE: TemplateConfig = {
   useToleranceGroup: true,
   groupToleranceValue: 2.5,
   groupToleranceName: '',
-  availableHumedad: true,
+  availableHumedad: false,
   availableGranosVerdes: true,
   availableImpurezas: true,
   availableVano: true,
