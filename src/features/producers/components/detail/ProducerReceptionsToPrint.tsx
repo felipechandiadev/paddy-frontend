@@ -35,6 +35,10 @@ function formatKg(value: number): string {
   })} kg`;
 }
 
+function formatNetWeightKg(value: number): string {
+  return `${Math.round(value).toLocaleString('es-CL')} kg`;
+}
+
 function getStatusLabel(status: ProducerReceptionItem['status']): string {
   if (status === 'analyzed') {
     return 'Analizado';
@@ -106,7 +110,7 @@ export default function ProducerReceptionsToPrint({
         </div>
         <div className={styles.summaryCard}>
           <p className={styles.summaryLabel}>Peso neto total</p>
-          <p className={styles.summaryValue}>{formatKg(totalNetWeight)}</p>
+          <p className={styles.summaryValue}>{formatNetWeightKg(totalNetWeight)}</p>
         </div>
       </section>
 
@@ -135,7 +139,7 @@ export default function ProducerReceptionsToPrint({
                 <td>{reception.seasonName || '-'}</td>
                 <td>{reception.riceTypeName || '-'}</td>
                 <td>{reception.licensePlate || '-'}</td>
-                <td className={styles.rightAlign}>{formatKg(reception.netWeight)}</td>
+                <td className={styles.rightAlign}>{formatNetWeightKg(reception.netWeight)}</td>
                 <td>{getStatusLabel(reception.status)}</td>
               </tr>
             ))}
