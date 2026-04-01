@@ -1,0 +1,111 @@
+{
+  "auth": {
+    "admin": {
+      "email": "admin@ayg.cl",
+      "password": "098098",
+      "role": "ADMIN",
+      "userId": 1
+    },
+    "consultant": {
+      "email": "consultor@ayg.cl",
+      "password": "098098",
+      "role": "CONSULTANT",
+      "userId": 2
+    }
+  },
+  "seasons": {
+    "active": {
+      "id": 3,
+      "code": "COSECHA_2026",
+      "year": 2026,
+      "startDate": "2026-01-01",
+      "endDate": "2026-12-31"
+    },
+    "inactive2025": {
+      "id": 2,
+      "code": "COSECHA_2025",
+      "year": 2025
+    },
+    "inactive2024": {
+      "id": 1,
+      "code": "COSECHA_2024",
+      "year": 2024
+    }
+  },
+  "producers": [
+    {
+      "id": 1,
+      "name": "Agrícola San Pedro LTDA",
+      "rut": "78956452-1",
+      "city": "Parral",
+      "bank": "Banco del Estado de Chile"
+    },
+    {
+      "id": 2,
+      "name": "Sociedad Agrícola Los Robles",
+      "rut": "65432198-9",
+      "city": "Parral",
+      "bank": "Banco Santander"
+    },
+    {
+      "id": 3,
+      "name": "Empresa Agraria El Retiro",
+      "rut": "54321098-7",
+      "city": "Parral",
+      "bank": "Banco BCI"
+    },
+    {
+      "id": 4,
+      "name": "Producción Arrocera Central",
+      "rut": "43210987-5",
+      "city": "Parral",
+      "bank": "Banco BTG Pactual"
+    },
+    {
+      "id": 5,
+      "name": "Agroindustrial Maule SpA",
+      "rut": "32109876-3",
+      "city": "Parral",
+      "bank": "Itaú"
+    }
+  ],
+  "riceTypes": [
+    {
+      "id": 1,
+      "code": "DIAMANTE",
+      "name": "Diamante",
+      "price": 600,
+      "active": false
+    },
+    {
+      "id": 2,
+      "code": "ZAFIRO",
+      "name": "Zafiro",
+      "price": 550,
+      "active": true
+    },
+    {
+      "id": 3,
+      "code": "BR",
+      "name": "Brillante",
+      "price": 200,
+      "active": true
+    },
+    {
+      "id": 4,
+      "code": "HR",
+      "name": "Harper",
+      "price": 200,
+      "active": false
+    }
+  ],
+  "template": {
+    "id": 1,
+    "name": "COSECHA 2026",
+    "isDefault": true
+  },
+  "api": {
+    "baseUrl": "http://localhost:3000/api/v1",
+    "appUrl": "http://localhost:3001"
+  }
+}
