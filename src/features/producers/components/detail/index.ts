@@ -1,0 +1,10 @@
+export { default as ProducerDetailDialog } from './ProducerDetailDialog';
+export { default as ProducerDetailContent } from './ProducerDetailContent';
+export { default as ProducerInfoSection } from './ProducerInfoSection';
+export { default as BankAccountsSection } from './BankAccountsSection';
+export { default as BankAccountCard } from './BankAccountCard';
+export { default as CreateBankAccountDialog } from './CreateBankAccountDialog';
+export { default as DeleteBankAccountDialog } from './DeleteBankAccountDialog';
+export { default as ReceptionsSection } from './ReceptionsSection';
+export { default as AdvancesSection } from './AdvancesSection';
+export { default as SettlementsSection } from './SettlementsSection';

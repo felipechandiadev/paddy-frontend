@@ -1,0 +1,188 @@
+.sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 14mm;
+  background: #ffffff;
+  color: #111827;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.14);
+}
+
+.companyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.companyKicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.companyName {
+  margin: 0.2rem 0;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;
+}
+
+.companyAddress {
+  margin: 0;
+  font-size: 10px;
+  color: #4b5563;
+}
+
+.documentMeta {
+  text-align: right;
+}
+
+.documentTitle {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.documentDate {
+  margin: 0.4rem 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.guideBadge {
+  margin: 0.5rem 0 0;
+  display: inline-block;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  padding: 0.25rem 0.55rem;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.separator {
+  margin: 1.1rem 0;
+  height: 1px;
+  background: rgba(17, 24, 39, 0.22);
+}
+
+.metaSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.metaRow {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+
+.metaLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.metaValue {
+  font-size: 10px;
+  color: #1f2937;
+}
+
+.summarySection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.summaryCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 0.65rem;
+}
+
+.summaryLabel {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.summaryValue {
+  margin: 0.3rem 0 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.table thead tr {
+  background: #f3f4f6;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.table th,
+.table td {
+  padding: 0.45rem 0.5rem;
+  text-align: left;
+}
+
+.table th {
+  font-weight: 800;
+  color: #111827;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rightAlign {
+  text-align: right !important;
+}
+
+.emptyState {
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 11px;
+  color: #475569;
+}
+
+.footer {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+  font-size: 9px;
+  color: #6b7280;
+  text-align: right;
+}
+
+@media print {
+  .sheet {
+    box-shadow: none;
+    margin: 0;
+    width: auto;
+    min-height: auto;
+    padding: 0;
+  }
+}

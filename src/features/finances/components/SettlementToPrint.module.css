@@ -1,0 +1,461 @@
+.sheet {
+  width: 215.9mm;
+  min-height: 279.4mm;
+  margin: 0 auto;
+  padding: 5mm;
+  background: #ffffff;
+  color: #111827;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.14);
+}
+
+.companyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.companyKicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.companyName {
+  margin: 0.2rem 0;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;
+}
+
+.companyAddress {
+  margin: 0;
+  font-size: 10px;
+  color: #4b5563;
+}
+
+.documentMeta {
+  text-align: right;
+}
+
+.documentTitle {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.documentDate {
+  margin: 0.4rem 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.guideBadge {
+  margin: 0.5rem 0 0;
+  display: inline-block;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  padding: 0.25rem 0.55rem;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.separator {
+  margin: 1.1rem 0;
+  height: 1px;
+  background: rgba(17, 24, 39, 0.22);
+}
+
+.producerSection {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.infoColumn {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 1.25rem;
+}
+
+.inlineInfo {
+  display: flex;
+  gap: 0.45rem;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.inlineLabel {
+  width: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.inlineValue {
+  font-size: 10px;
+  color: #111827;
+}
+
+.blockSection {
+  margin-bottom: 1rem;
+}
+
+.blockTitle {
+  margin: 0 0 0.45rem;
+  display: inline-block;
+  border-bottom: 2px solid #1e3a8a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1f2937;
+}
+
+.summaryTable,
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.summaryTable thead tr,
+.detailTable thead tr {
+  background: #f3f4f6;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.summaryTable th,
+.summaryTable td,
+.detailTable th,
+.detailTable td {
+  padding: 0.45rem 0.5rem;
+  text-align: left;
+}
+
+.detailTable th,
+.detailTable td {
+  padding: 0.12rem 0.45rem;
+  line-height: 1.1;
+}
+
+.receptionDetailTable {
+  font-size: 8px;
+}
+
+.receptionDetailTable th,
+.receptionDetailTable td {
+  padding: 0.05rem 0.22rem;
+  line-height: 1.0;
+}
+
+.paddyKgColumn {
+  min-width: 72px;
+  white-space: nowrap;
+}
+
+.riceTypeColumn {
+  max-width: 50px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.guiaColumn {
+  max-width: 45px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summaryTable th,
+.detailTable th {
+  font-weight: 800;
+  color: #111827;
+}
+
+.summaryTable tbody tr,
+.detailTable tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.emptyCell {
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.totalsRow td {
+  padding: 0.18rem 0.45rem;
+  line-height: 1.1;
+  font-weight: 800;
+  border-top: 1.5px solid #9ca3af;
+  color: #111827;
+}
+
+.receptionDetailTable .totalsRow td {
+  padding: 0.05rem 0.22rem;
+}
+
+.summaryBox {
+  display: block;
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.summaryTablesRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.billingBox {
+  flex: 1 1 auto;
+  min-width: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.billingTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  border: 1.5px solid #cbd5e1;
+}
+
+.billingTable thead tr {
+  background: #f3f4f6;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.billingTable th,
+.billingTable td {
+  padding: 0.18rem 0.38rem;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.billingTable th {
+  font-weight: 800;
+  color: #111827;
+}
+
+.billingTable tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.billingTable tbody tr:nth-child(odd) {
+  background: #f8fafc;
+}
+
+.billingTotalsRow td {
+  padding: 0.2rem 0.38rem;
+  line-height: 1.15;
+  font-weight: 900;
+  border-top: 2px solid #0f172a;
+  background: #e2e8f0;
+}
+
+.summaryBoxTable {
+  width: auto;
+  min-width: 380px;
+  border-collapse: collapse;
+  font-size: 10px;
+  border: 1.5px solid #cbd5e1;
+}
+
+.summaryBoxTable thead tr {
+  background: #1e3a8a;
+}
+
+.summaryBoxTable th,
+.summaryBoxTable td {
+  padding: 0.22rem 0.65rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.summaryBoxTable th {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.summaryBoxTable tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.summaryBoxTable tbody tr:nth-child(odd) {
+  background: #f8fafc;
+}
+
+.balanceRow td {
+  padding: 0.28rem 0.65rem;
+  line-height: 1.2;
+  font-weight: 900;
+  background: #0f172a;
+  color: #ffffff;
+  border-top: 2px solid #1e3a8a;
+}
+
+.rightAlign {
+  text-align: right !important;
+}
+
+.receptionDivider {
+  border-left: 2.5px solid #6b7280;
+}
+
+.receptionNetColumn {
+  max-width: 52px;
+}
+
+.receptionDetailTable td.receptionNetColumn {
+  white-space: nowrap;
+}
+
+.receptionDetailTable th.receptionNetColumn {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.1;
+}
+
+.highlightRow {
+  background: #eff6ff;
+  font-weight: 800;
+}
+
+.finalSection {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0;
+}
+
+.finalCard {
+  width: min(360px, 100%);
+  border-radius: 10px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0.8rem 0.95rem;
+}
+
+.finalLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.finalAmount {
+  margin: 0.35rem 0 0;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.notesSection {
+  margin-top: 0.5rem;
+}
+
+.notesTitle {
+  margin: 0 0 0.25rem;
+  font-size: 10px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.notesBox {
+  min-height: 62px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 0.5rem;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.signatureSection {
+  margin-top: 1.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.signatureBlock {
+  position: relative;
+  width: min(260px, 100%);
+  height: 86px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.signatureStamp {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  width: 119px;
+  height: auto;
+  transform: translateX(-50%) rotate(-19deg);
+  opacity: 0.88;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.signatureLine {
+  width: 100%;
+  border-top: 1px solid #111827;
+  padding-top: 0.35rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.signatureLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.signatureCompany {
+  margin: 0.2rem 0 0;
+  font-size: 7px;
+  color: #6b7280;
+}
+
+.footer {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.42rem;
+  font-size: 8px;
+  color: #6b7280;
+  text-align: center;
+}
+
+@media print {
+  .sheet {
+    box-shadow: none;
+    margin: 0;
+    width: auto;
+    min-height: auto;
+    padding: 0;
+  }
+}

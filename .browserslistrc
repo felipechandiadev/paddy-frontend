@@ -1,0 +1,17 @@
+# Especifica los navegadores soportados para compatibilidad
+# Usado por: autoprefixer, browserslist, y herramientas de build
+
+# Soporte moderno (últimas 2 versiones)
+last 2 versions
+
+# No soportar navegadores muertos
+not dead
+
+# Mínimo 0.5% de cuota de mercado
+> 0.5%
+
+# Exclusiones explícitas
+not op_mini all
+not IE 11
+not IE 10
+not IE 9

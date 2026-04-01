@@ -1,0 +1,110 @@
+{
+  "name": "Paddy AyG",
+  "short_name": "Paddy AyG",
+  "description": "Sistema de gestión administrativa para Arrocera Aparicio y García Ltda. Control de recepciones, productores, finanzas y reportes.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1C2046",
+  "lang": "es-CL",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "productivity",
+    "finance"
+  ],
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Recepciones",
+      "short_name": "Recepciones",
+      "description": "Gestionar recepciones de paddy",
+      "url": "/paddy/operations/receptions",
+      "icons": [
+        {
+          "src": "/icons/shortcut-receptions.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Productores",
+      "short_name": "Productores",
+      "description": "Gestionar productores",
+      "url": "/paddy/management/producers",
+      "icons": [
+        {
+          "src": "/icons/shortcut-producers.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Anticipos",
+      "short_name": "Anticipos",
+      "description": "Revisar y registrar anticipos",
+      "url": "/paddy/finances/advances",
+      "icons": [
+        {
+          "src": "/icons/shortcut-advances.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "short_name": "Reportes",
+      "description": "Ver reportes de la aplicación",
+      "url": "/paddy/reports/drying-revenue",
+      "icons": [
+        {
+          "src": "/icons/shortcut-reports.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "iarc_rating_id": ""
+}
