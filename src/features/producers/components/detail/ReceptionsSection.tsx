@@ -283,7 +283,7 @@ export default function ReceptionsSection({
                 <td className="px-4 py-2 text-gray-700">{reception.riceTypeName || '-'}</td>
                 <td className="px-4 py-2 text-gray-700 uppercase">{reception.licensePlate || '-'}</td>
                 <td className="px-4 py-2 text-right font-medium text-gray-900">
-                  {reception.netWeight.toFixed(2)} kg
+                  {Math.round(reception.netWeight).toLocaleString('es-CL')} kg
                 </td>
                 <td className="px-4 py-2">
                   <span
