@@ -155,7 +155,7 @@
 
 .receptionDetailTable th,
 .receptionDetailTable td {
-  padding: 0.05rem 0.22rem;
+  padding: 0.45rem 0.22rem;
   line-height: 1.0;
 }
 
@@ -393,7 +393,7 @@
 }
 
 .signatureSection {
-  margin-top: 1.75rem;
+  margin-top: 3.625rem;
   display: flex;
   justify-content: flex-end;
 }
