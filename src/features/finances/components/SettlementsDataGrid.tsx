@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { formatDateValue } from '@/lib/date-formatter';
 import { useCan } from '@/shared/hooks/useCan';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
@@ -442,7 +443,7 @@ const SettlementsDataGrid: React.FC<SettlementsDataGridProps> = ({
       minWidth: 110,
       sortable: true,
       renderCell: ({ value }) =>
-        value ? new Date(value).toLocaleDateString('es-CL') : '-',
+        formatDateValue(value),
     },
     {
       field: 'actions',

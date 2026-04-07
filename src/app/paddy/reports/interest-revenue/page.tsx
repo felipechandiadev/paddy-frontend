@@ -1,3 +1,11 @@
+import { DateTime } from 'luxon';
+import {
+  formatDateInput,
+  formatDateValue,
+  parseDate,
+  getYearStart,
+  getYearEnd,
+} from '@/lib/date-formatter';
 import {
   fetchAdvanceProducerOptions,
   fetchAdvanceSeasonOptions,
@@ -7,27 +15,10 @@ import { InterestRevenueReport } from '@/features/reports/components';
 
 export const dynamic = 'force-dynamic';
 
-function toDateInputValue(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function parseSeasonDate(value?: string | null): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value}T00:00:00`
-    : value;
-  const parsed = new Date(normalized);
-
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
-function resolveInitialRange(seasons: AdvanceSeasonOption[], today: Date): {
+function resolveInitialRange(
+  seasons: AdvanceSeasonOption[],
+  today: DateTime,
+): {
   initialStartDate: string;
   initialEndDate: string;
   initialSeasonId?: number;
@@ -35,39 +26,39 @@ function resolveInitialRange(seasons: AdvanceSeasonOption[], today: Date): {
   const seasonsWithDates = seasons
     .map((season) => ({
       season,
-      startDate: parseSeasonDate(season.startDate),
-      endDate: parseSeasonDate(season.endDate),
+      startDate: parseDate(season.startDate),
+      endDate: parseDate(season.endDate),
     }))
     .filter(
       (
         item,
       ): item is {
         season: AdvanceSeasonOption;
-        startDate: Date;
-        endDate: Date;
+        startDate: DateTime;
+        endDate: DateTime;
       } => Boolean(item.startDate && item.endDate),
     );
 
   if (seasonsWithDates.length === 0) {
     return {
-      initialStartDate: toDateInputValue(new Date(today.getFullYear(), 0, 1)),
-      initialEndDate: toDateInputValue(new Date(today.getFullYear(), 11, 31)),
+      initialStartDate: formatDateInput(getYearStart()),
+      initialEndDate: formatDateInput(getYearEnd()),
     };
   }
 
   const latestClosedSeason = [...seasonsWithDates]
-    .filter((item) => item.endDate.getTime() <= today.getTime())
-    .sort((a, b) => b.endDate.getTime() - a.endDate.getTime())[0];
+    .filter((item) => item.endDate <= today)
+    .sort((a, b) => b.endDate.toMillis() - a.endDate.toMillis())[0];
 
   const preferredSeason =
     latestClosedSeason ??
     [...seasonsWithDates].sort(
-      (a, b) => b.endDate.getTime() - a.endDate.getTime(),
+      (a, b) => b.endDate.toMillis() - a.endDate.toMillis(),
     )[0];
 
   return {
-    initialStartDate: toDateInputValue(preferredSeason.startDate),
-    initialEndDate: toDateInputValue(preferredSeason.endDate),
+    initialStartDate: formatDateInput(preferredSeason.startDate),
+    initialEndDate: formatDateInput(preferredSeason.endDate),
     initialSeasonId: preferredSeason.season.id,
   };
 }
@@ -78,10 +69,10 @@ export default async function InterestRevenueReportPage() {
     fetchAdvanceProducerOptions(),
   ]);
 
-  const today = new Date();
+  const today = DateTime.now();
   const { initialStartDate, initialEndDate, initialSeasonId } =
     resolveInitialRange(seasonsResult.data, today);
-  const initialPrintDateLabel = today.toLocaleDateString('es-CL');
+  const initialPrintDateLabel = formatDateValue(today);
 
   return (
     <div className="space-y-6">

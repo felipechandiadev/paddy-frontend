@@ -19,6 +19,15 @@ import {
   calculateGroupTolerance,
 } from '../utils/paramCells';
 
+// Función para obtener la fecha de hoy en formato YYYY-MM-DD
+const getTodayIsoDate = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const DEFAULT_TEMPLATE: TemplateConfig = {
   useToleranceGroup: true,
   groupToleranceValue: 2.5,
@@ -81,6 +90,7 @@ const DEFAULT_DATA: ReceptionData = {
   price: 0,
   guide: '',
   licensePlate: '',
+  receptionDate: '',
   note: '',
   grossWeight: 0,
   tare: 0,
@@ -92,7 +102,10 @@ const DEFAULT_DATA: ReceptionData = {
 };
 
 export function useReceptionData(): ReceptionContextType {
-  const [data, setDataState] = useState<ReceptionData>(DEFAULT_DATA);
+  const [data, setDataState] = useState<ReceptionData>({
+    ...DEFAULT_DATA,
+    receptionDate: getTodayIsoDate(),
+  });
   const [template, setTemplateState] = useState<TemplateConfig>(DEFAULT_TEMPLATE);
   const [version, setVersion] = useState(0);
   const [isTemplateReady, setIsTemplateReady] = useState(false);
@@ -529,7 +542,10 @@ export function useReceptionData(): ReceptionContextType {
 
   // Reset
   const resetData = useCallback(() => {
-    setDataState(DEFAULT_DATA);
+    setDataState({
+      ...DEFAULT_DATA,
+      receptionDate: getTodayIsoDate(),
+    });
     setTemplateState(DEFAULT_TEMPLATE);
 
     // Reset all cluster nodes
@@ -540,6 +556,32 @@ export function useReceptionData(): ReceptionContextType {
       if (cluster.penalty) cluster.penalty.setValue(0);
     });
   }, [clusters]);
+
+  // Reset datos pero mantener la plantilla cargada (para nueva entrada rápida)
+  const resetDataButKeepTemplate = useCallback(() => {
+    // Guardar template actual antes de resetear
+    const currentTemplate = template;
+
+    // Resetear solo los datos, mantener templateId y asignar fecha de hoy
+    setDataState((prev) => ({
+      ...DEFAULT_DATA,
+      templateId: prev.templateId, // Mantener el template que estaba cargado
+      receptionDate: getTodayIsoDate(), // Fecha de hoy por defecto
+    }));
+
+    // Recargar la plantilla anterior
+    setTemplateState(currentTemplate);
+
+    // Reset all cluster nodes PERO sin resetear los valores de la plantilla (ya que mantienen la config)
+    Object.values(clusters).forEach((cluster) => {
+      if (cluster.range) cluster.range.setValue(0);
+      if (cluster.percent) cluster.percent.setValue(0);
+      if (cluster.tolerance) cluster.tolerance.setValue(0);
+      if (cluster.penalty) cluster.penalty.setValue(0);
+    });
+
+    setVersion((ver) => ver + 1);
+  }, [template, clusters]);
 
   return {
     data,
@@ -555,5 +597,6 @@ export function useReceptionData(): ReceptionContextType {
     validateReception,
     calculateTotals: calculateTotalsCallback,
     resetData,
+    resetDataButKeepTemplate,
   };
 }

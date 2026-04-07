@@ -1,6 +1,6 @@
 .sheet {
-  width: 215.9mm;
-  min-height: 279.4mm;
+  width: 279.4mm;
+  min-height: 215.9mm;
   margin: 0 auto;
   padding: 5mm;
   background: #ffffff;
@@ -451,6 +451,10 @@
 }
 
 @media print {
+  @page {
+    size: landscape;
+  }
+
   .sheet {
     box-shadow: none;
     margin: 0;

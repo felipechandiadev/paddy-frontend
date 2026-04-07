@@ -36,6 +36,7 @@ export interface ReceptionListItem {
   netWeight: number;
   guide: string;
   licensePlate: string;
+  receptionDate?: string;
   note?: string;
   createdAt: string;
   deletedAt?: string | null;

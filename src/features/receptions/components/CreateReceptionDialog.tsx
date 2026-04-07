@@ -13,6 +13,7 @@ import {
   updateReceptionAndAnalysis,
   fetchLastReception,
 } from '../actions/fetch.action';
+import { fetchDefaultTemplate, fetchTemplateById } from '../actions/fetchTemplates.action';
 import { ReceptionProvider } from '../context/ReceptionContext';
 import { useReceptionContext } from '../context/ReceptionContext';
 import {
@@ -81,15 +82,13 @@ function CreateReceptionDialogContent({
     setTemplate,
     isTemplateReady,
     resetData,
+    resetDataButKeepTemplate,
   } = useReceptionContext();
   const isEditMode = mode === 'edit' && Boolean(initialReception?.id);
   const editReceptionId = initialReception?.id ?? null;
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [previewOpen, setPreviewOpen] = React.useState(false);
-  const [previewReception, setPreviewReception] = React.useState<PrintableReception | null>(null);
   const [savingReception, setSavingReception] = React.useState(false);
-  const [previewError, setPreviewError] = React.useState<string | null>(null);
   const [realPrintOpen, setRealPrintOpen] = React.useState(false);
   const [realPrintReception, setRealPrintReception] = React.useState<PrintableReception | null>(null);
   const [initializingEditData, setInitializingEditData] = React.useState(false);
@@ -122,7 +121,6 @@ function CreateReceptionDialogContent({
     const preloadEditData = async () => {
       setInitializingEditData(true);
       setError(null);
-      setPreviewError(null);
       resetData();
 
       try {
@@ -173,6 +171,10 @@ function CreateReceptionDialogContent({
         setData(
           'licensePlate',
           receptionDetail.licensePlate ?? initialReception.licensePlate ?? '',
+        );
+        setData(
+          'receptionDate',
+          receptionDetail.receptionDate ? receptionDetail.receptionDate.split('T')[0] : '',
         );
         setData('grossWeight', grossWeight);
         setData('tare', tareWeight);
@@ -462,6 +464,7 @@ function CreateReceptionDialogContent({
         grossWeight: Number(data.grossWeight),
         tare: Number(data.tare),
         price: Number(data.price),
+        receptionDate: data.receptionDate || undefined,
         note,
         dryPercent,
       },
@@ -540,92 +543,9 @@ function CreateReceptionDialogContent({
     };
   }, [clusters, data, template]);
 
-  const buildPreviewReception = React.useCallback((): PrintableReception => {
-    const nowIso = new Date().toISOString();
-    const payload = buildCreatePayload();
-
-    const grossWeight = Number(payload.reception.grossWeight ?? data.grossWeight ?? 0);
-    const tare = Number(payload.reception.tare ?? data.tare ?? 0);
-    const netWeight = Math.max(0, grossWeight - tare);
-
-    const summaryPenaltyKg = Number(
-      payload.analysis.summaryPenaltyKg ??
-        clusters.Summary.penalty?.getValue() ??
-        data.totalDiscounts ??
-        0,
-    );
-    const bonusKg = Number(
-      clusters.Bonus.penalty?.getValue() ??
-        data.bonus ??
-        0,
-    );
-    const paddyNeto = Math.floor(netWeight - summaryPenaltyKg + bonusKg);
-
-    const templateConfig: ReceptionTemplateConfig = {
-      availableHumedad: Boolean(template.availableHumedad),
-      availableGranosVerdes: Boolean(template.availableGranosVerdes),
-      availableImpurezas: Boolean(template.availableImpurezas),
-      availableVano: Boolean(template.availableVano),
-      availableHualcacho: Boolean(template.availableHualcacho),
-      availableGranosManchados: Boolean(template.availableGranosManchados),
-      availableGranosPelados: Boolean(template.availableGranosPelados),
-      availableGranosYesosos: Boolean(template.availableGranosYesosos),
-    };
-
-    const analysis: ReceptionAnalysis = {
-      id: 0,
-      receptionId: 0,
-      ...payload.analysis,
-      createdAt: nowIso,
-      updatedAt: nowIso,
-    };
-
-    return {
-      id: 0,
-      producer: data.producerName || 'Sin productor',
-      rut: data.producerRut || '-',
-      producerAddress: data.producerAddress || '',
-      producerCity: data.producerCity || '',
-      riceType: data.riceTypeName || 'Sin tipo de arroz',
-      templateName: 'Previsualización',
-      templateConfig,
-      price: Number(payload.reception.price ?? data.price ?? 0),
-      grossWeight,
-      tare,
-      netWeight,
-      guide: data.guide || 'SIN-GUIA',
-      licensePlate: data.licensePlate || '-',
-      note: data.note,
-      createdAt: nowIso,
-      totalConDescuentos: summaryPenaltyKg,
-      bonusKg,
-      paddyNeto,
-      status: 'analyzed',
-      analysis,
-    };
-  }, [
-    buildCreatePayload,
-    clusters.Bonus.penalty,
-    clusters.Summary.penalty,
-    data,
-    template,
-  ]);
-
   const handleCloseDialog = React.useCallback(() => {
-    setPreviewOpen(false);
-    setPreviewReception(null);
-    setPreviewError(null);
     onClose(); // Restore manual close
   }, [onClose]);
-
-  const handleClosePreview = React.useCallback(() => {
-    setPreviewOpen(false);
-    setPreviewError(null);
-    // Establecer focus en el productor
-    setTimeout(() => {
-      producerAutocompleteRef.current?.focus();
-    }, 100);
-  }, []);
 
   const handleCloseRealPrint = React.useCallback(() => {
     setRealPrintOpen(false);
@@ -636,24 +556,104 @@ function CreateReceptionDialogContent({
     }, 100);
   }, []);
 
+  // Recargar plantilla después de guardar recepción
+  const reloadCurrentTemplate = React.useCallback(async (templateId: number) => {
+    try {
+      let selectedTemplate;
+      
+      if (templateId > 0) {
+        // Cargar plantilla específica
+        selectedTemplate = await fetchTemplateById(templateId);
+      } else {
+        // Cargar plantilla por defecto
+        selectedTemplate = await fetchDefaultTemplate();
+      }
+
+      if (selectedTemplate) {
+        console.log('[RECARGA TEMPLATE] Plantilla recargada:', selectedTemplate);
+        setTemplate({
+          useToleranceGroup: selectedTemplate.useToleranceGroup ?? true,
+          groupToleranceValue: selectedTemplate.groupToleranceValue ?? 0,
+          groupToleranceName: selectedTemplate.groupToleranceName ?? '',
+          
+          // Parámetros disponibles
+          availableHumedad: selectedTemplate.availableHumedad ?? true,
+          availableGranosVerdes: selectedTemplate.availableGranosVerdes ?? true,
+          availableImpurezas: selectedTemplate.availableImpurezas ?? true,
+          availableVano: selectedTemplate.availableVano ?? true,
+          availableHualcacho: selectedTemplate.availableHualcacho ?? true,
+          availableGranosManchados: selectedTemplate.availableGranosManchados ?? true,
+          availableGranosPelados: selectedTemplate.availableGranosPelados ?? true,
+          availableGranosYesosos: selectedTemplate.availableGranosYesosos ?? true,
+          availableBonus: selectedTemplate.availableBonus ?? true,
+          availableDry: selectedTemplate.availableDry ?? false,
+          
+          // Mostrar tolerancia individual
+          showToleranceHumedad: selectedTemplate.showToleranceHumedad ?? true,
+          showToleranceGranosVerdes: selectedTemplate.showToleranceGranosVerdes ?? true,
+          showToleranceImpurezas: selectedTemplate.showToleranceImpurezas ?? true,
+          showToleranceVano: selectedTemplate.showToleranceVano ?? true,
+          showToleranceHualcacho: selectedTemplate.showToleranceHualcacho ?? true,
+          showToleranceGranosManchados: selectedTemplate.showToleranceGranosManchados ?? true,
+          showToleranceGranosPelados: selectedTemplate.showToleranceGranosPelados ?? true,
+          showToleranceGranosYesosos: selectedTemplate.showToleranceGranosYesosos ?? true,
+          
+          // Grupo de tolerancia por parámetro
+          groupToleranceHumedad: selectedTemplate.groupToleranceHumedad ?? false,
+          groupToleranceGranosVerdes: selectedTemplate.groupToleranceGranosVerdes ?? false,
+          groupToleranceImpurezas: selectedTemplate.groupToleranceImpurezas ?? false,
+          groupToleranceVano: selectedTemplate.groupToleranceVano ?? false,
+          groupToleranceHualcacho: selectedTemplate.groupToleranceHualcacho ?? false,
+          groupToleranceGranosManchados: selectedTemplate.groupToleranceGranosManchados ?? false,
+          groupToleranceGranosPelados: selectedTemplate.groupToleranceGranosPelados ?? false,
+          groupToleranceGranosYesosos: selectedTemplate.groupToleranceGranosYesosos ?? false,
+          
+          // Valores (porcentaje y tolerancia) de cada parámetro
+          percentHumedad: selectedTemplate.percentHumedad ?? 0,
+          toleranceHumedad: selectedTemplate.toleranceHumedad ?? 0,
+          percentGranosVerdes: selectedTemplate.percentGranosVerdes ?? 0,
+          toleranceGranosVerdes: selectedTemplate.toleranceGranosVerdes ?? 0,
+          percentImpurezas: selectedTemplate.percentImpurezas ?? 0,
+          toleranceImpurezas: selectedTemplate.toleranceImpurezas ?? 0,
+          percentVano: selectedTemplate.percentVano ?? 0,
+          toleranceVano: selectedTemplate.toleranceVano ?? 0,
+          percentHualcacho: selectedTemplate.percentHualcacho ?? 0,
+          toleranceHualcacho: selectedTemplate.toleranceHualcacho ?? 0,
+          percentGranosManchados: selectedTemplate.percentGranosManchados ?? 0,
+          toleranceGranosManchados: selectedTemplate.toleranceGranosManchados ?? 0,
+          percentGranosPelados: selectedTemplate.percentGranosPelados ?? 0,
+          toleranceGranosPelados: selectedTemplate.toleranceGranosPelados ?? 0,
+          percentGranosYesosos: selectedTemplate.percentGranosYesosos ?? 0,
+          toleranceGranosYesosos: selectedTemplate.toleranceGranosYesosos ?? 0,
+          
+          // Bonificación y Secado
+          toleranceBonus: selectedTemplate.toleranceBonus ?? 0,
+          percentDry: selectedTemplate.percentDry ?? 0,
+        });
+      }
+    } catch (error) {
+      console.error('[RECARGA TEMPLATE] Error recargando plantilla:', error);
+    }
+  }, [setTemplate]);
+
   const handleSaveReception = React.useCallback(async () => {
     console.log('[GUARDAR] Click en Guardar Recepción');
     console.log('[GUARDAR] Estado data:', JSON.stringify(data));
     console.log('[GUARDAR] isTemplateReady:', isTemplateReady);
     setSavingReception(true);
-    setPreviewError(null);
+    setError(null);
 
     try {
       if (isEditMode && !initialReception) {
         console.log('[GUARDAR] No se encontró la recepción a editar');
-        setPreviewError('No se encontró la recepción a editar.');
+        setError('No se encontró la recepción a editar.');
         setSavingReception(false);
         return;
       }
 
       if (!isTemplateReady) {
         console.log('[GUARDAR] Plantilla aún no está lista');
-        setPreviewError('La plantilla se está cargando. Por favor espere...');
+        setError('La plantilla se está cargando. Por favor espere...');
         setSavingReception(false);
         return;
       }
@@ -661,14 +661,14 @@ function CreateReceptionDialogContent({
       const isValid = validateReception();
       if (!isValid) {
         console.log('[GUARDAR] Validación fallida');
-        setPreviewError('Faltan datos obligatorios para guardar la recepción.');
+        setError('Faltan datos obligatorios para guardar la recepción.');
         setSavingReception(false);
         return;
       }
 
       if (!Number(data.templateId ?? 0)) {
         console.log('[GUARDAR] Falta plantilla, data.templateId:', data.templateId, 'Number:', Number(data.templateId ?? 0));
-        setPreviewError('Debes seleccionar una plantilla antes de guardar la recepción.');
+        setError('Debes seleccionar una plantilla antes de guardar la recepción.');
         setSavingReception(false);
         return;
       }
@@ -683,7 +683,7 @@ function CreateReceptionDialogContent({
 
       if (!saveResult.success || !saveResult.data) {
         console.log('[GUARDAR] Error al guardar:', saveResult.error);
-        setPreviewError(saveResult.error || 'No se pudo guardar la recepción.');
+        setError(saveResult.error || 'No se pudo guardar la recepción.');
         setSavingReception(false);
         return;
       }
@@ -727,6 +727,7 @@ function CreateReceptionDialogContent({
           netWeight: Number(raw.netWeight ?? 0),
           guide: raw.guideNumber ?? raw.guide ?? '-',
           licensePlate: raw.licensePlate ?? '-',
+          receptionDate: raw.receptionDate ?? '',
           note: raw.notes ?? raw.note ?? '',
           createdAt: raw.createdAt ?? '',
           totalConDescuentos: Number(raw.totalDiscountKg ?? 0),
@@ -736,19 +737,23 @@ function CreateReceptionDialogContent({
           analysis: analysis ?? null,
         };
       }
-      // Limpiar formulario y abrir impresión
-      resetData();
+      // Guardar templateId antes de resetear
+      const currentTemplateId = data.templateId ?? 0;
+      
+      // Limpiar formulario pero mantener plantilla cargada, abrir impresión
+      resetDataButKeepTemplate();
+      
+      // Recargar la plantilla desde la API
+      await reloadCurrentTemplate(currentTemplateId);
+      
       setProducerAutocompleteResetKey((prev) => prev + 1);
-      setPreviewOpen(false);
-      setPreviewReception(null);
-      setPreviewError(null);
       setRealPrintReception(realReception);
       setRealPrintOpen(true);
       console.log('[GUARDAR] Diálogo de impresión abierto');
       onSuccess();
     } catch (err) {
       console.log('[GUARDAR] Error inesperado:', err);
-      setPreviewError(
+      setError(
         err instanceof Error
           ? err.message
           : 'Error inesperado guardando la recepción.',
@@ -765,6 +770,7 @@ function CreateReceptionDialogContent({
     isTemplateReady,
     onSuccess,
     validateReception,
+    reloadCurrentTemplate,
   ]);
 
   const getFocusableElements = React.useCallback(() => {
@@ -840,55 +846,90 @@ function CreateReceptionDialogContent({
     [moveFocusToNextElement]
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleDirectSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (initializingEditData) {
       return;
     }
 
-    setLoading(true);
+    // Validación detallada antes de guardar
     setError(null);
+    const missingFields: string[] = [];
+    if (data.producerId === 0) missingFields.push('Productor');
+    if (data.riceTypeId === 0) missingFields.push('Tipo de arroz');
+    if (data.grossWeight <= 0) missingFields.push('Peso bruto');
 
-    try {
-      // Validación detallada
-      const missingFields: string[] = [];
-      if (data.producerId === 0) missingFields.push('Productor');
-      if (data.riceTypeId === 0) missingFields.push('Tipo de arroz');
-      if (data.grossWeight <= 0) missingFields.push('Peso bruto');
-
-      // Validar clusters (solo tipo 'param', no Summary/Bonus/Dry que son calculados)
-      Object.entries(clusters).forEach(([key, cluster]) => {
-        if (cluster.type === 'param' && cluster.available && !validateParamCluster(cluster, data.netWeight)) {
-          missingFields.push(cluster.name || key);
-        }
-      });
-
-      if (missingFields.length > 0) {
-        setError(
-          'Completa los campos obligatorios antes de previsualizar la recepción.' +
-          '\nCampos incompletos o inválidos: ' + missingFields.join(', ')
-        );
-        return;
+    // Validar clusters (solo tipo 'param', no Summary/Bonus/Dry que son calculados)
+    Object.entries(clusters).forEach(([key, cluster]) => {
+      if (cluster.type === 'param' && cluster.available && !validateParamCluster(cluster, data.netWeight)) {
+        missingFields.push(cluster.name || key);
       }
+    });
 
-      calculateTotals();
-      const preview = buildPreviewReception();
-      setPreviewReception(preview);
-      setPreviewError(null);
-      setPreviewOpen(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear la recepción');
-    } finally {
-      setLoading(false);
+    if (missingFields.length > 0) {
+      setError(
+        'Completa los campos obligatorios antes de guardar la recepción.' +
+        '\nCampos incompletos o inválidos: ' + missingFields.join(', ')
+      );
+      return;
     }
+
+    // Validación pasó, proceed to save
+    calculateTotals();
+    await handleSaveReception();
   };
+
+  // Atajo de teclado: Tecla "-" para enfocar el autocomplete del productor
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Detectar tecla "-" (menos) desde el teclado numérico o regular
+      if (e.key === '-' || e.code === 'Minus' || e.key === 'Subtract') {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        let producerInput: HTMLInputElement | null = null;
+        
+        // Estrategia 1: Buscar por data-test-id (más confiable)
+        producerInput = document.querySelector(
+          'input[data-test-id="auto-complete-input"]'
+        ) as HTMLInputElement | null;
+        
+        // Estrategia 2: Buscar por placeholder que contenga "productor"
+        if (!producerInput) {
+          producerInput = document.querySelector(
+            'input[placeholder*="productor"]'
+          ) as HTMLInputElement | null;
+        }
+        
+        // Estrategia 3: Si no encuentra, buscar el primer input del formulario visible
+        if (!producerInput) {
+          const allInputs = document.querySelectorAll('input[type="text"]:not([disabled])');
+          if (allInputs.length > 0) {
+            producerInput = allInputs[0] as HTMLInputElement;
+          }
+        }
+        
+        if (producerInput) {
+          producerInput.focus();
+          producerInput.click?.();
+          // Enviar evento input para abrir el dropdown
+          producerInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    };
+
+    // Listener en window para capturar todos los eventos
+    window.addEventListener('keydown', handleKeyDown, true);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, []);
 
   return (
     <div
-      className={`w-screen h-screen max-w-none bg-white rounded-lg shadow-2xl flex flex-col ${
-        previewOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
+      className="w-screen h-screen max-w-none bg-white rounded-lg shadow-2xl flex flex-col opacity-100"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-gray-50">
@@ -911,7 +952,7 @@ function CreateReceptionDialogContent({
       {/* Content - 3 Columns */}
       <form
         ref={formRef}
-        onSubmit={handleSubmit}
+        onSubmit={handleDirectSave}
         onKeyDown={handleFormKeyDown}
         className="flex-1 overflow-hidden flex flex-row"
       >
@@ -949,39 +990,11 @@ function CreateReceptionDialogContent({
               Cancelar
             </Button>
             <Button loading={loading || initializingEditData} type="submit" className="flex-1">
-              Previsualizar
+              Guardar
             </Button>
           </div>
         </div>
       </form>
-
-      {previewReception && (
-        <PrintDialog
-          open={previewOpen}
-          onClose={handleClosePreview}
-          title={`Previsualización Recepción`}
-          fileName={`Previsualizacion-Recepcion`}
-          disablePrint={savingReception}
-          size="custom"
-          maxWidth="96vw"
-          fullWidth
-          scroll="body"
-          zIndex={90}
-          contentStyle={{ maxHeight: '95vh' }}
-          extraActions={
-            <Button
-              variant="primary"
-              onClick={e => { console.log('[GUARDAR] Click botón Guardar'); handleSaveReception(); }}
-              loading={savingReception}
-              disabled={savingReception}
-            >
-              {isEditMode ? 'Guardar Cambios' : 'Guardar Recepción'}
-            </Button>
-          }
-        >
-          <ReceptionToPrint reception={previewReception} />
-        </PrintDialog>
-      )}
 
       {realPrintReception && (
         <PrintDialog

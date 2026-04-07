@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { formatDateValue } from '@/lib/date-formatter';
 import {
   PrintableReception,
   ReceptionAnalysis,
@@ -332,8 +333,8 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
         </div>
         <div className={styles.documentMeta}>
           <h2 className={styles.documentTitle}>RECEPCION PADDY</h2>
-          <p className={styles.documentDate}>
-            Fecha: {new Date().toLocaleDateString('es-CL')}
+          <p className={styles.documentDate} suppressHydrationWarning>
+            Fecha: {formatDateValue(reception.receptionDate)}
           </p>
           {!isPreview && (
             <p className={styles.guideBadge}>Folio {receptionNumber}</p>
@@ -560,7 +561,7 @@ export const ReceptionToPrint: React.FC<ReceptionToPrintProps> = ({
         </div>
       </section>
 
-      <footer className={styles.footer}>
+      <footer className={styles.footer} suppressHydrationWarning>
         Impreso: {new Date().toLocaleString('es-CL')} | Recepcion folio: {receptionNumber}
       </footer>
     </div>

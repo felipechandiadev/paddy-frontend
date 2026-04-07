@@ -1,5 +1,6 @@
 'use client';
 
+import { formatDateValue, formatDateTimeLocale } from '@/lib/date-formatter';
 import { AdvanceDetails, AdvanceProducerBankAccount } from '../types/finances.types';
 import styles from './AdvanceReceiptToPrint.module.css';
 
@@ -16,43 +17,16 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-function formatDate(value?: string | null): string {
-  if (!value) {
-    return '-';
-  }
-
-  // Parsear fecha YYYY-MM-DD como fecha local para evitar problemas de zona horaria
-  const dateStr = String(value).trim();
-  const parts = dateStr.split('-');
-  
-  if (parts.length === 3) {
-    const year = Number(parts[0]);
-    const month = Number(parts[1]);
-    const day = Number(parts[2]);
-    
-    if (Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)) {
-      const date = new Date(year, month - 1, day);
-      if (!Number.isNaN(date.getTime())) {
-        return date.toLocaleDateString('es-CL');
-      }
-    }
-  }
-  
-  // Fallback para otros formatos
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return date.toLocaleDateString('es-CL');
-}
-
 function formatPercent(value?: number | null): string {
   if (value === undefined || value === null || !Number.isFinite(value)) {
     return '-';
   }
 
   return `${Number(value).toFixed(2)} %`;
+}
+
+function formatDate(value?: string | null): string {
+  return formatDateValue(value);
 }
 
 function getPaymentMethodLabel(paymentMethod?: string | null): string {
@@ -118,8 +92,8 @@ export default function AdvanceReceiptToPrint({
     advance.bankAccount?.holderName || advance.producer?.name || '-';
   const transferHolderRut =
     advance.bankAccount?.holderRut || advance.producer?.rut || '-';
-  const issueDateLabel = formatDate(advance.issueDate);
-  const printDateLabel = new Date().toLocaleString('es-CL');
+  const issueDateLabel = formatDateValue(advance.issueDate);
+  const printDateLabel = formatDateTimeLocale(new Date());
   const producerName = advance.producer?.name || '-';
   const producerRut = advance.producer?.rut || '-';
 
@@ -203,18 +177,6 @@ export default function AdvanceReceiptToPrint({
               <div className={styles.summaryRow}>
                 <span className={styles.summaryLabel}>Fecha de entrega</span>
                 <span className={styles.summaryValue}>{issueDateLabel}</span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>Fecha cobro</span>
-                <span className={styles.summaryValue}>{formatDate(advance.checkDueDate)}</span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>Beneficiario</span>
-                <span className={styles.summaryValue}>{advance.checkPayeeName || '-'}</span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryLabel}>RUT beneficiario</span>
-                <span className={styles.summaryValue}>{advance.checkPayeeRut || '-'}</span>
               </div>
             </>
           )}

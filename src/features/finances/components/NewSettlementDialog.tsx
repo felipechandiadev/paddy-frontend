@@ -1,6 +1,11 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import {
+  formatDateInput,
+  formatDateValue,
+  parseDate,
+} from '@/lib/date-formatter';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import AutoComplete from '@/shared/components/ui/AutoComplete/AutoComplete';
 import Dialog from '@/shared/components/ui/Dialog/Dialog';
@@ -134,13 +139,11 @@ const normalizeDateInput = (value: unknown): string => {
 };
 
 const toDateInputValue = (value: string | null | undefined): string => {
-  const rawValue = normalizeTextInput(value).trim();
-
-  if (!rawValue) {
+  if (!value) {
     return '';
   }
 
-  return rawValue.includes('T') ? rawValue.split('T')[0] : rawValue;
+  return formatDateInput(value);
 };
 
 async function fetchSettlementAdvanceCandidates({
@@ -2065,7 +2068,7 @@ const NewSettlementDialog: React.FC<NewSettlementDialogProps> = ({
                             {reception.guideNumber}
                           </td>
                           <td className="border-b border-gray-100 px-1.5 py-1.5 text-neutral-700">
-                            {new Date(reception.createdAt).toLocaleDateString('es-CL')}
+                            {formatDateValue(reception.createdAt)}
                           </td>
                           <td className="border-b border-gray-100 px-1.5 py-1.5 text-neutral-700">
                             {reception.riceTypeName || '-'}
@@ -2271,7 +2274,7 @@ const NewSettlementDialog: React.FC<NewSettlementDialogProps> = ({
                             #{advance.id}
                           </td>
                           <td className="border-b border-gray-100 px-1.5 py-1.5 text-neutral-700">
-                            {new Date(advance.issueDate).toLocaleDateString('es-CL')}
+                            {formatDateValue(advance.issueDate)}
                           </td>
                           <td className="border-b border-gray-100 px-1.5 py-1.5 text-right font-medium text-neutral-900">
                             {currencyFormatter.format(advance.amount)}
@@ -2300,9 +2303,11 @@ const NewSettlementDialog: React.FC<NewSettlementDialogProps> = ({
                           <td className="border-b border-gray-100 px-1.5 py-1.5 text-neutral-700">
                             <div className="flex items-center gap-1">
                               <span>
-                                {advance.interestEndDate
-                                  ? new Date(advance.interestEndDate).toLocaleDateString('es-CL')
-                                  : new Date().toLocaleDateString('es-CL')}
+                                {formatDateValue(
+                                  advance.interestEndDate
+                                    ? advance.interestEndDate
+                                    : new Date(),
+                                )}
                               </span>
                               <IconButton
                                 icon="edit"

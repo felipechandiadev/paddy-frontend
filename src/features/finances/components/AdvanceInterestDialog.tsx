@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { formatDateValue } from '@/lib/date-formatter';
 import { Advance, UpdateAdvancePayload } from '../types/finances.types';
 import { updateAdvance } from '../actions/finances.action';
 import Dialog from '@/shared/components/ui/Dialog/Dialog';
@@ -126,7 +127,7 @@ export const AdvanceInterestDialog: React.FC<AdvanceInterestDialogProps> = ({
             <div>
               <span className="text-gray-600">Fecha Inicio:</span>
               <p className="font-semibold">
-                {new Date(advance.issueDate).toLocaleDateString('es-CL')}
+                {formatDateValue(advance.issueDate)}
               </p>
             </div>
           </div>

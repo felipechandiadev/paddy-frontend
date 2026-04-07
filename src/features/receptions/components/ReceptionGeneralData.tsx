@@ -526,6 +526,15 @@ export default function ReceptionGeneralData({
           required
         />
 
+        {/* Fecha de Recepción */}
+        <TextField
+          label="Fecha de Recepción"
+          type="date"
+          value={data.receptionDate ?? ''}
+          onChange={(e) => setData('receptionDate', e.target.value)}
+          required
+        />
+
         {/* Peso Bruto */}
         <TextField
           label="Peso Bruto (kg)"

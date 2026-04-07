@@ -1,3 +1,11 @@
+import { DateTime } from 'luxon';
+import {
+  formatDateInput,
+  formatDateValue,
+  parseDate,
+  getYearStart,
+  getYearEnd,
+} from '@/lib/date-formatter';
 import {
   fetchAdvanceProducerOptions,
   fetchAdvanceSeasonOptions,
@@ -7,27 +15,11 @@ import { FinancialProfitabilityReport } from '@/features/reports/components';
 
 export const dynamic = 'force-dynamic';
 
-function parseSeasonDate(value?: string | null): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value}T00:00:00`
-    : value;
-  const parsed = new Date(normalized);
-
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
+function toDateInputValue(date: DateTime): string {
+  return formatDateInput(date);
 }
 
-function toDateInputValue(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function resolveInitialSeasonId(seasons: AdvanceSeasonOption[], today: Date): number | undefined {
+function resolveInitialSeasonId(seasons: AdvanceSeasonOption[], today: DateTime): number | undefined {
   const active = seasons.find((season) => season.isActive);
 
   if (active) {
@@ -37,14 +29,14 @@ function resolveInitialSeasonId(seasons: AdvanceSeasonOption[], today: Date): nu
   const withDates = seasons
     .map((season) => ({
       season,
-      endDate: parseSeasonDate(season.endDate),
+      endDate: parseDate(season.endDate),
     }))
     .filter(
       (
         item,
       ): item is {
         season: AdvanceSeasonOption;
-        endDate: Date;
+        endDate: DateTime;
       } => Boolean(item.endDate),
     );
 
@@ -53,23 +45,23 @@ function resolveInitialSeasonId(seasons: AdvanceSeasonOption[], today: Date): nu
   }
 
   const latestClosed = [...withDates]
-    .filter((item) => item.endDate.getTime() <= today.getTime())
-    .sort((a, b) => b.endDate.getTime() - a.endDate.getTime())[0];
+    .filter((item) => item.endDate <= today)
+    .sort((a, b) => b.endDate.toMillis() - a.endDate.toMillis())[0];
 
-  return latestClosed?.season.id ?? withDates.sort((a, b) => b.endDate.getTime() - a.endDate.getTime())[0]?.season.id;
+  return latestClosed?.season.id ?? withDates.sort((a, b) => b.endDate.toMillis() - a.endDate.toMillis())[0]?.season.id;
 }
 
 function resolveInitialCutoffDate(
   seasons: AdvanceSeasonOption[],
   initialSeasonId: number | undefined,
-  today: Date,
+  today: DateTime,
 ): string {
   if (!initialSeasonId) {
     return toDateInputValue(today);
   }
 
   const selectedSeason = seasons.find((season) => season.id === initialSeasonId);
-  const seasonEndDate = parseSeasonDate(selectedSeason?.endDate);
+  const seasonEndDate = parseDate(selectedSeason?.endDate);
 
   if (!seasonEndDate) {
     return toDateInputValue(today);
@@ -84,14 +76,14 @@ export default async function FinancialProfitabilityReportPage() {
     fetchAdvanceProducerOptions(),
   ]);
 
-  const today = new Date();
+  const today = DateTime.now();
   const initialSeasonId = resolveInitialSeasonId(seasonsResult.data ?? [], today);
   const initialCutoffDate = resolveInitialCutoffDate(
     seasonsResult.data ?? [],
     initialSeasonId,
     today,
   );
-  const initialPrintDateLabel = today.toLocaleDateString('es-CL');
+  const initialPrintDateLabel = formatDateValue(today);
 
   return (
     <div className="space-y-6">

@@ -59,6 +59,30 @@ export default function CreateProducerDialog({ open, onClose, onSuccess }: Creat
     bankAccounts: [],
   });
 
+  // IDs únicos para cada campo para navegación con Enter
+  const fieldIds = {
+    rut: 'producer-rut',
+    name: 'producer-name',
+    email: 'producer-email',
+    phone: 'producer-phone',
+    address: 'producer-address',
+    city: 'producer-city',
+    contactPerson: 'producer-contact',
+    submitBtn: 'producer-submit-btn',
+  };
+
+  // Orden de navegación con Enter
+  const tabOrder = [
+    fieldIds.rut,
+    fieldIds.name,
+    fieldIds.email,
+    fieldIds.phone,
+    fieldIds.address,
+    fieldIds.city,
+    fieldIds.contactPerson,
+    fieldIds.submitBtn,
+  ];
+
   useEffect(() => {
     setIsMounted(true);
 
@@ -129,6 +153,24 @@ export default function CreateProducerDialog({ open, onClose, onSuccess }: Creat
     setIsLoading(false);
   };
 
+  // Manejador de tecla Enter para navegar entre campos
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, fieldId: string) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      const currentIndex = tabOrder.indexOf(fieldId);
+      if (currentIndex === -1) return;
+      
+      const nextFieldId = tabOrder[currentIndex + 1];
+      if (nextFieldId) {
+        const nextElement = document.getElementById(nextFieldId) as HTMLInputElement | HTMLButtonElement;
+        if (nextElement) {
+          nextElement.focus();
+        }
+      }
+    }
+  };
+
   if (!open || !isMounted) return null;
 
   return createPortal(
@@ -146,61 +188,75 @@ export default function CreateProducerDialog({ open, onClose, onSuccess }: Creat
           )}
 
           <TextField
+            id={fieldIds.rut}
             label="RUT *"
             type="dni"
             value={formData.rut}
             onChange={(e) => setFormData(prev => ({ ...prev, rut: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.rut)}
             placeholder="12.345.678-9"
             required
           />
 
           <TextField
+            id={fieldIds.name}
             label="Nombre *"
             type="text"
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.name)}
             placeholder="Nombre del productor"
             required
           />
 
           <TextField
+            id={fieldIds.email}
             label="Email"
             type="email"
             value={formData.email}
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.email)}
             placeholder="correo@ejemplo.com"
           />
 
           <TextField
+            id={fieldIds.phone}
             label="Teléfono"
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.phone)}
             placeholder="+56912345678"
             phonePrefix="+56"
           />
 
           <TextField
+            id={fieldIds.address}
             label="Dirección"
             type="text"
             value={formData.address}
             onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.address)}
             placeholder="Calle Principal 123"
           />
 
           <TextField
+            id={fieldIds.city}
             label="Ciudad"
             type="text"
             value={formData.city}
             onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.city)}
             placeholder="Parral"
           />
 
           <TextField
+            id={fieldIds.contactPerson}
             label="Persona de Contacto"
             type="text"
             value={formData.contactPerson}
             onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
+            onKeyDown={(e: any) => handleKeyDown(e, fieldIds.contactPerson)}
             placeholder="Nombre del contacto"
           />
 
@@ -223,10 +279,16 @@ export default function CreateProducerDialog({ open, onClose, onSuccess }: Creat
               Cancelar
             </Button>
             <Button
+              id={fieldIds.submitBtn}
               type="submit"
               variant="primary"
               loading={isLoading}
               disabled={isLoading}
+              onKeyDown={(e: any) => {
+                if (e.key === 'Enter') {
+                  handleSubmit();
+                }
+              }}
             >
               Crear
             </Button>

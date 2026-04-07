@@ -1,5 +1,6 @@
 'use client';
 
+import { formatDateValue } from '@/lib/date-formatter';
 import { Settlement } from '../types/finances.types';
 import styles from './SettlementToPrint.module.css';
 
@@ -81,16 +82,7 @@ function formatKg(value: number): string {
 }
 
 function formatDate(value?: string | null): string {
-  if (!value) {
-    return '-';
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return date.toLocaleDateString('es-CL');
+  return formatDateValue(value);
 }
 
 function getDocumentTitle(status: Settlement['status']): string {

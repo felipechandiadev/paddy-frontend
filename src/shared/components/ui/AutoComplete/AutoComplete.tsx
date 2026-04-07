@@ -78,14 +78,26 @@ const AutoComplete = <T = Option,>({
   const containerRef = useRef<HTMLDivElement>(null);
   const disabled = (props as any).disabled;
 
-  // Vincular el ref externo al ref interno
+  // Buscar y vincular el input interno del TextField al ref externo
+  useEffect(() => {
+    // Buscar el input dentro del contenedor del AutoComplete
+    const textFieldInput = containerRef.current?.querySelector('input[type="text"], input[placeholder*="Buscar"]') as HTMLInputElement;
+    
+    if (textFieldInput && !inputRef.current) {
+      inputRef.current = textFieldInput;
+      console.log('[AutoComplete] Input del TextField vinculado al ref interno');
+    }
+  }, []);
+
+  // Vincular el ref interno con el ref externo
   useEffect(() => {
     if (externalInputRef && inputRef.current) {
       if (externalInputRef.current !== inputRef.current) {
         (externalInputRef as any).current = inputRef.current;
+        console.log('[AutoComplete] Ref externo vinculado al ref interno');
       }
     }
-  }, [externalInputRef]);
+  }, [externalInputRef, inputRef]);
 
   // Sync inputValue with value prop
   useEffect(() => {

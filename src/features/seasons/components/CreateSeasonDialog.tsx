@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { DateTime } from 'luxon';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import { TextField } from '@/shared/components/ui/TextField/TextField';
@@ -16,7 +17,7 @@ interface CreateSeasonDialogProps {
 export default function CreateSeasonDialog({ open, onClose, onSuccess }: CreateSeasonDialogProps) {
   const { data: session } = useSession();
   const [name, setName] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [year, setYear] = useState(DateTime.now().year.toString());
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +26,7 @@ export default function CreateSeasonDialog({ open, onClose, onSuccess }: CreateS
   useEffect(() => {
     if (!open) {
       setName('');
-      setYear(new Date().getFullYear().toString());
+      setYear(DateTime.now().year.toString());
       setStartDate('');
       setEndDate('');
       setError('');
@@ -75,7 +76,7 @@ export default function CreateSeasonDialog({ open, onClose, onSuccess }: CreateS
       }
 
       setName('');
-      setYear(new Date().getFullYear().toString());
+      setYear(DateTime.now().year.toString());
       setStartDate('');
       setEndDate('');
       setError('');

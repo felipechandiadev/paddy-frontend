@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { formatDateValue } from '@/lib/date-formatter';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import { Transaction } from '../types/finances.types';
 
@@ -117,7 +118,7 @@ const PaymentsDataGrid: React.FC<PaymentsDataGridProps> = ({
       minWidth: 120,
       sortable: true,
       renderCell: ({ value }) =>
-        value ? new Date(value).toLocaleDateString('es-CL') : '-',
+        formatDateValue(value),
     },
     {
       field: 'notes',

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { formatDateValue, parseDate } from '@/lib/date-formatter';
 import { useCan } from '@/shared/hooks/useCan';
 import DataGrid, { DataGridColumn, DataGridProps } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
@@ -20,19 +21,6 @@ const paymentMethodLabels: Record<'transfer' | 'check' | 'cash', string> = {
   check: 'Cheque',
   cash: 'Efectivo',
 };
-
-function parseDateInput(value?: string | null): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  const normalizedValue = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value}T00:00:00`
-    : value;
-
-  const parsedDate = new Date(normalizedValue);
-  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
-}
 
 export interface AdvancesDataGridProps extends Omit<DataGridProps, 'columns'> {
   advances: Advance[];
@@ -369,8 +357,7 @@ const AdvancesDataGrid: React.FC<AdvancesDataGridProps> = ({
       sortable: true,
       valueGetter: (params) => params.row.interestEndDate || null,
       renderCell: ({ value }) => {
-        const parsed = parseDateInput(String(value || ''));
-        return <span>{parsed ? parsed.toLocaleDateString('es-CL') : '-'}</span>;
+        return <span>{formatDateValue(value)}</span>;
       },
     },
     {

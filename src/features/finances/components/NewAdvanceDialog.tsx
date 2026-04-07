@@ -1,6 +1,12 @@
 'use client';
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import {
+  getTodayInputFormat,
+  formatDateInput,
+  formatDateValue,
+  parseDate,
+} from '@/lib/date-formatter';
 import Alert from '@/shared/components/ui/Alert/Alert';
 import AutoComplete from '@/shared/components/ui/AutoComplete/AutoComplete';
 import { Button } from '@/shared/components/ui/Button/Button';
@@ -71,21 +77,14 @@ const PAYMENT_METHOD_OPTIONS = [
   { id: 'cash', label: 'Efectivo' },
 ];
 
-const getTodayDate = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-};
+const getTodayDate = () => getTodayInputFormat();
 
 const toDateInputValue = (value?: string | null) => {
   if (!value) {
     return '';
   }
 
-  return String(value).slice(0, 10);
+  return formatDateInput(value);
 };
 
 const createInitialFormState = (): AdvanceFormState => ({
@@ -122,16 +121,7 @@ const formatBankAccountLabel = (
   }`;
 
 const formatDateLabel = (value?: string | null) => {
-  if (!value) {
-    return '-';
-  }
-
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
-    return value;
-  }
-
-  return parsedDate.toLocaleDateString('es-CL');
+  return formatDateValue(value);
 };
 
 export default function NewAdvanceDialog({

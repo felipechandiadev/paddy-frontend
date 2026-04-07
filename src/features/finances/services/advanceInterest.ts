@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+import { parseDate, getDaysBetween } from '@/lib/date-formatter';
 import { Advance } from '../types/finances.types';
 
 type AdvanceInterestSource = Pick<
@@ -12,19 +14,6 @@ interface AdvanceInterestOverrides {
   referenceDate?: Date;
 }
 
-function parseAdvanceDate(value: string | null | undefined): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  const normalizedValue = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value}T00:00:00`
-    : value;
-
-  const parsedDate = new Date(normalizedValue);
-  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
-}
-
 export function calculateAdvanceInterest(
   advance: AdvanceInterestSource,
   overrides: AdvanceInterestOverrides = {}
@@ -36,18 +25,18 @@ export function calculateAdvanceInterest(
     return 0;
   }
 
-  const issueDate = parseAdvanceDate(advance.issueDate);
+  const issueDate = parseDate(advance.issueDate);
   if (!issueDate) {
     return 0;
   }
 
+  const endDateStr = overrides.interestEndDate ?? advance.interestEndDate;
   const endDate =
-    parseAdvanceDate(overrides.interestEndDate ?? advance.interestEndDate ?? null) ??
-    overrides.referenceDate ??
-    new Date();
+    (endDateStr ? parseDate(endDateStr) : null) ??
+    (overrides.referenceDate ? DateTime.fromJSDate(overrides.referenceDate, { zone: 'utc' }) : null) ??
+    DateTime.now();
 
-  const diffInMs = endDate.getTime() - issueDate.getTime();
-  const daysActive = Math.max(0, diffInMs / (1000 * 60 * 60 * 24));
+  const daysActive = Math.max(0, getDaysBetween(issueDate, endDate));
   const monthsActive = daysActive / 30;
   const interestRate = overrides.interestRate ?? advance.interestRate;
 

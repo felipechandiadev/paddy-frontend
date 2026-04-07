@@ -186,6 +186,7 @@ export interface CreateReceptionAndAnalysisPayload {
     grossWeight: number;
     tare: number;
     price: number;
+    receptionDate?: string;
     note?: string;
     dryPercent?: number;
   };
@@ -404,6 +405,7 @@ export async function fetchReceptions(
       netWeight: Number(reception.netWeight) || 0,
       guide: reception.guideNumber || reception.guide || '',
       licensePlate: reception.licensePlate || '',
+      receptionDate: reception.receptionDate || '',
       note: reception.notes || '',
       createdAt: reception.createdAt,
       deletedAt:
@@ -832,6 +834,7 @@ export async function createReceptionAndAnalysis(
       licensePlate: payload.reception.licensePlate,
       grossWeight: Number(payload.reception.grossWeight),
       tareWeight: Number(payload.reception.tare),
+      receptionDate: payload.reception.receptionDate || undefined,
       dryPercent: normalizedDryPercent,
       dryFeeApplied: normalizedDryPercent > 0,
       notes: payload.reception.note?.trim() || undefined,

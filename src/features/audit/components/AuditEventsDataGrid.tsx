@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { formatDateTimeLocale } from '@/lib/date-formatter';
 import DataGrid, { DataGridColumn } from '@/shared/components/ui/DataGrid';
 import IconButton from '@/shared/components/ui/IconButton/IconButton';
 import { AuditEvent } from '../types/audit.types';
@@ -72,16 +73,7 @@ export default function AuditEventsDataGrid({
         minWidth: 120,
         sortable: true,
         valueGetter: (params: any) => {
-          const date = new Date(params.row.createdAt);
-          return date.toLocaleString('es-CL', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-          });
+          return formatDateTimeLocale(params.row.createdAt);
         },
       },
       {

@@ -140,6 +140,7 @@ export interface ReceptionData {
   price: number;
   guide: string;
   licensePlate: string;
+  receptionDate?: string;
   note: string;
   
   // Pesos
@@ -179,4 +180,5 @@ export interface ReceptionContextType {
   
   // Reset
   resetData: () => void;
+  resetDataButKeepTemplate: () => void;
 }

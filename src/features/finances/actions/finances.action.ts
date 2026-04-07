@@ -1,5 +1,6 @@
 'use server';
 
+import { DateTime } from 'luxon';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth.config';
 import { throwIfBackendUnavailable } from '@/lib/api/backend-connection-error';
@@ -445,7 +446,7 @@ function normalizeTransaction(raw: any): Transaction {
     type: normalizedType,
     amount: Number(source.amount ?? 0),
     transactionDate: String(
-      source.transactionDate ?? source.createdAt ?? new Date().toISOString(),
+      source.transactionDate ?? source.createdAt ?? DateTime.now().toISO(),
     ),
     paymentMethod,
     metadata,
